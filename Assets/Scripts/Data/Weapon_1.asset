@@ -19,6 +19,7 @@ MonoBehaviour:
   damage: 3
   attackRate: 1
   attackRange: 1.5
+  spawnOffset: 2
   animatorController: {fileID: 9100000, guid: e2eca18f44dbea24f91a0eae591c15aa, type: 2}
   effectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 7277185083647824485, guid: 1a8db0b0fbfd138479fefe9222cfe8b5, type: 3}

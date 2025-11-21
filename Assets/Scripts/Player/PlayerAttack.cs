@@ -33,7 +33,7 @@ public class PlayerAttack : MonoBehaviour
         Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
 
         // 이펙트가 생성될 위치 (플레이어 앞쪽 일정 거리)
-        Vector2 spawnPosition = (Vector2)transform.position + (direction * weapon.attackRange * 0.8f);
+        Vector2 spawnPosition = (Vector2)transform.position + (direction * weapon.spawnOffset);
 
         // 1. 이펙트 프리팹 생성 (투사체처럼 날아가지 않음)
         if (weapon.projectilePrefab != null) // WeaponData의 ProjectilePrefab 슬롯에 '이펙트'를 넣으세요
@@ -72,10 +72,14 @@ public class PlayerAttack : MonoBehaviour
     {
         if (weapon.projectilePrefab != null)
         {
-            GameObject projectileObj = Instantiate(weapon.projectilePrefab, transform.position, Quaternion.identity);
-            Projectile projectile = projectileObj.GetComponent<Projectile>();
             Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
 
+            // [수정] 투사체도 spawnOffset 만큼 앞에서 생성되도록 변경
+            Vector2 spawnPosition = (Vector2)transform.position + (direction * weapon.spawnOffset);
+
+            GameObject projectileObj = Instantiate(weapon.projectilePrefab, spawnPosition, Quaternion.identity);
+
+            Projectile projectile = projectileObj.GetComponent<Projectile>();
             if (projectile != null)
             {
                 projectile.Initialize(weapon.damage, 10f, direction);

@@ -8,10 +8,13 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
     public SpriteRenderer spriteRenderer;
     public PlayerAttack playerAttack;
+    public PlayerStats stats; // 스탯 컴포넌트 참조
 
     [Header("Settings")]
     public float moveSpeed = 6f;
     public float jumpPower = 15f;
+    public int maxJumpCount = 2; // 최대 점프 횟수
+    public int currentJumpCount = 0; // 현재 점프 횟수
 
     [Header("Weapons")]
     public WeaponData[] mainWeapons; // 인스펙터에서 할당할 무기 리스트 (3개)
@@ -29,28 +32,30 @@ public class PlayerController : MonoBehaviour
     public PlayerJumpState JumpState { get; private set; }
     public PlayerAirState AirState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
-
+    public PlayerDeadState DeadState { get; private set; }
     public bool IsFacingRight => !spriteRenderer.flipX;
 
     // 입력값 저장용 변수
     public Vector2 CurrentMovementInput { get; private set; }
 
+
     private void Awake()
     {
-        // 1. 상태 머신 생성
+        // 상태 머신 생성
         StateMachine = new PlayerStateMachine();
-
-        // 2. 상태 인스턴스 생성 (this를 넘겨줌)
+        stats = GetComponent<PlayerStats>(); // 같은 오브젝트에 있다고 가정
+        // 상태 인스턴스 생성 (this를 넘겨줌)
         IdleState = new PlayerIdleState(this, StateMachine);
         MoveState = new PlayerMoveState(this, StateMachine);
         JumpState = new PlayerJumpState(this, StateMachine);
         AirState = new PlayerAirState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
+        DeadState = new PlayerDeadState(this, StateMachine);
     }
 
     private void Start()
     {
-        // 3. 이벤트 구독 (InputReader -> Controller)
+        // 이벤트 구독
         inputReader.OnMoveEvent += OnMove;
         inputReader.OnJumpEvent += OnJump;
         inputReader.OnAttackEvent += OnAttack;
@@ -60,8 +65,9 @@ public class PlayerController : MonoBehaviour
 
         SwapMainWeapon(0);
         SwapSubWeapon(0);
-        // 4. 초기 상태 설정
+        // 초기 상태 설정
         StateMachine.Initialize(IdleState);
+        stats.OnDie += HandleDie;
     }
 
     private void Update()
@@ -75,6 +81,11 @@ public class PlayerController : MonoBehaviour
     }
 
     // --- 입력 이벤트 핸들러 ---
+    private void HandleDie()
+    {
+        StateMachine.ChangeState(DeadState);
+    }
+
     private void OnMove(Vector2 input)
     {
         CurrentMovementInput = input;
@@ -87,11 +98,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump()
     {
-        // 점프는 특정 상태(Idle, Move)에서만 가능하도록 상태 내부에서 처리할 수도 있지만,
-        // 일단 지금은 현재 상태가 '점프 가능'한지 체크하지 않고 바로 상태 전환을 시도하거나,
-        // 상태에게 "점프 키 눌림"을 알려주는 방식을 씁니다.
-        // 여기서는 간단히: "바닥에 있을 때만 점프 가능"
-        if (IsGrounded())
+        if (IsGrounded() || currentJumpCount < maxJumpCount)
         {
             StateMachine.ChangeState(JumpState);
         }
