@@ -6,6 +6,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void Enter()
     {
+        player.currentJumpCount = 0;
         player.rigid.velocity = Vector2.zero; // 미끄러짐 방지
         player.animator.SetBool("isWalking", false);
         player.animator.SetBool("isJumping", false);

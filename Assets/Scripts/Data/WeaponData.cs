@@ -13,6 +13,7 @@ public class WeaponData : ScriptableObject
     public float damage;            // 공격력
     public float attackRate;        // 공격 속도 (딜레이)
     public float attackRange;       // 사거리
+    public float spawnOffset = 1.0f;    // 투사체 생성 위치 오프셋
 
     [Header("리소스")]
     // 무기별 애니메이션 컨트롤러 (장착 시 교체용)
