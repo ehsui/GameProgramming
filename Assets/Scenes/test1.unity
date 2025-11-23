@@ -436,6 +436,8 @@ GameObject:
   - component: {fileID: 1490504585}
   - component: {fileID: 1490504584}
   - component: {fileID: 1490504590}
+  - component: {fileID: 1490504591}
+  - component: {fileID: 1490504592}
   m_Layer: 0
   m_Name: PEPE
   m_TagString: Untagged
@@ -459,8 +461,20 @@ MonoBehaviour:
   rigid: {fileID: 1490504586}
   animator: {fileID: 1490504585}
   spriteRenderer: {fileID: 1490504588}
+  playerAttack: {fileID: 1490504591}
+  stats: {fileID: 1490504592}
   moveSpeed: 6
   jumpPower: 15
+  maxJumpCount: 2
+  currentJumpCount: 0
+  mainWeapons:
+  - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
+  - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
+  - {fileID: 11400000, guid: c8134cbfdbde6dd409a1f144163f52b4, type: 2}
+  subWeapons:
+  - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
+  - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
+  - {fileID: 11400000, guid: c8134cbfdbde6dd409a1f144163f52b4, type: 2}
 --- !u!95 &1490504585
 Animator:
   serializedVersion: 5
@@ -497,7 +511,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -608,3 +622,32 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.2042973, y: 0.31046534}
   m_EdgeRadius: 0
+--- !u!114 &1490504591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490504583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a64d98828ddf4d4686761e382ee9007, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1490504592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490504583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cbda5497e296a24f8134c874cf00645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  maxBodhicitta: 100
+  level: 1
+  karma: 0
+  isInvincible: 0

@@ -6,6 +6,7 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void Enter()
     {
+        player.currentJumpCount = 0;
         player.animator.SetBool("isWalking", true);
     }
 
