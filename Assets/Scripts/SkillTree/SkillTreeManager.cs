@@ -41,7 +41,7 @@ public class SkillTreeManager : MonoBehaviour
         purchasedNodes.Add(data);
 
         // 스탯 적용 테스트
-        ApplyStats(data);
+        //ApplyStats(data);
         Debug.Log("노드 구매 완료");
 
         return true;
@@ -53,11 +53,11 @@ public class SkillTreeManager : MonoBehaviour
         return purchasedNodes.Contains(data);
     }
 
-    private void ApplyStats(NodeData data)
+    /*private void ApplyStats(NodeData data)
     {
         if (data.attackPowerPercent > 0)
             PlayerStats.Instance.AttackPowerUpgrade(data.attackPowerPercent);
         if (data.defensePowerPercent > 0)
             PlayerStats.Instance.DefensePowerUpgrade(data.defensePowerPercent);
-    }
+    }*/
 }
