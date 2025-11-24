@@ -35004,7 +35004,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052076504}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.83, y: -0.33, z: 0}
+  m_LocalPosition: {x: 16, y: 0, z: 0}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36182,11 +36182,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1488228302}
   - component: {fileID: 1488228301}
+  - component: {fileID: 1488228303}
   - component: {fileID: 1488228300}
   - component: {fileID: 1488228299}
   - component: {fileID: 1488228298}
   m_Layer: 0
-  m_Name: Bringer-of-Death-SpritSheet_0
+  m_Name: MeleeEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36205,12 +36206,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
-  chaseRange: 5
-  stopDistance: 1
+  chaseRange: 8
+  stopDistance: 3
+  attackRate: 2
   player: {fileID: 0}
   patrolPoints:
   - {fileID: 1717974419}
   - {fileID: 1052076505}
+  anim: {fileID: 0}
 --- !u!61 &1488228299
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -36224,18 +36227,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.011062652, y: 0.21491969}
+  m_Offset: {x: 0.0055211484, y: 0.1498554}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.51138365, y: 0.24275716}
-    oldSize: {x: 0.625, y: 0.84375}
+    pivot: {x: 0.75, y: 0.2}
+    oldSize: {x: 2.1875, y: 1.453125}
     newSize: {x: 1.4, y: 0.93}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6108777, y: 0.853511}
+  m_Size: {x: 0.60140103, y: 0.8542828}
   m_EdgeRadius: 0
 --- !u!50 &1488228300
 Rigidbody2D:
@@ -36318,13 +36321,34 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1488228297}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.55, y: -0.33, z: 0}
+  m_LocalPosition: {x: 11.55, y: 0, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1488228303
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488228297}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ccee253ff083e9e45ac8d4d553de6318, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1586718993
 GameObject:
   m_ObjectHideFlags: 0
@@ -36572,7 +36596,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1717974418}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.36, y: -0.33, z: 0}
+  m_LocalPosition: {x: 10, y: 0, z: 0}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36794,7 +36818,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1874832271}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.079216, y: 13.467862, z: -10}
+  m_LocalPosition: {x: 26.242712, y: 13.467862, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
