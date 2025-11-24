@@ -2,6 +2,8 @@
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }   //싱글톤
+
     [Header("References")]
     public PlayerInputReader inputReader;
     public Rigidbody2D rigid;
@@ -44,6 +46,17 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        // --- [싱글톤 패턴 적용] --- 다른 씬에 플레이어 추가하면 안됩니당
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         // 상태 머신 생성
         StateMachine = new PlayerStateMachine();
         stats = GetComponent<PlayerStats>(); // 같은 오브젝트에 있다고 가정

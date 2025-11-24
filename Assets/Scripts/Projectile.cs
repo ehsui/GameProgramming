@@ -2,7 +2,7 @@
 
 public class Projectile : MonoBehaviour
 {
-    private float damage;
+    public float damage;
     private float speed;
     private Vector2 direction;
     private Rigidbody2D rigid;
