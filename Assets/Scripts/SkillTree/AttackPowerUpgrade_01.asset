@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: AttackPowerUpgrade_01
   m_EditorClassIdentifier: 
   description: "\uACF5\uACA9\uB825 5% \uC99D\uAC00"
-  attackPower: 0
-  defensePower: 0
-  attackSpeed: 0
-  projectileRange: 0
-  explosionRange: 0
-  cost: 0
+  attackPowerPercent: 5
+  defensePowerPercent: 0
+  attackSpeedPercent: 0
+  projectileRangePercent: 0
+  explosionRangePercent: 0
+  cost: 5
   preNode: {fileID: 0}

@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillTreeManager : MonoBehaviour
 {
-    public static SkillTreeManager Instance;
-
+    public static SkillTreeManager Instance;    // ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤
     public int currentUp = 100;
 
-    private HashSet<NodeData> purchasedNodes = new HashSet<NodeData>();
+    private HashSet<NodeData> purchasedNodes = new HashSet<NodeData>(); // êµ¬ë§¤í•œ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸
+
+    public GameObject linePrefab;   // ë…¸ë“œ ì—°ê²°í•  ë¼ì¸ í”„ë¦¬íŒ¹ ë³€ìˆ˜
+    public Transform lineParent;    // ë¼ì¸ë“¤ ë‹´ì„ ì˜¤ë¸Œì íŠ¸
+    public RectTransform centerAnchor;  // ì„¼í„° ë…¸ë“œ ìœ„ì¹˜
+
+    private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
 
     public void Awake()
     {
-        // ½Ì±ÛÅæ
+        // ì‹±ê¸€í†¤
         if (Instance == null)
         {
             Instance = this;
@@ -23,41 +29,84 @@ public class SkillTreeManager : MonoBehaviour
         }
     }
 
-    // ±¸¸Å °¡´ÉÇÑ ³ëµåÀÎÁö È®ÀÎ(¸¶¿ì½º Å¬¸¯ÇßÀ» ¶§)
+    // êµ¬ë§¤ ê°€ëŠ¥í•œ ë…¸ë“œì¸ì§€ í™•ì¸(ë§ˆìš°ìŠ¤ í´ë¦­í–ˆì„ ë•Œ)
     public bool TryPurchase(NodeData data)
     {
-        // ±¸¸Å ºÒ°¡´ÉÇÑ °æ¿ì
-        // 1. ÀÌ¹Ì ±¸¸ÅÇÑ ³ëµåÀÏ ¶§
+        // êµ¬ë§¤ ë¶ˆê°€ëŠ¥í•œ ê²½ìš°
+        // 1. ì´ë¯¸ êµ¬ë§¤í•œ ë…¸ë“œì¼ ë•Œ
         if (purchasedNodes.Contains(data)) return false;
-        // 2. ¼±Çà ³ëµå°¡ ±¸¸Å ¾ÈµÆÀ½
+        // 2. ì„ í–‰ ë…¸ë“œê°€ êµ¬ë§¤ ì•ˆëìŒ
         if (data.preNode != null && !purchasedNodes.Contains(data.preNode)) return false;
-        // 3. ¾÷ÀÌ ºÎÁ·ÇÔ
+        // 3. ì—…ì´ ë¶€ì¡±í•¨
         if (currentUp < data.cost) return false;
 
-        // ¾÷ ¼Ò¸ğ
+        // ì—… ì†Œëª¨
         currentUp -= data.cost;
 
-        // ³ëµå ±¸¸Å Ã³¸®
+        // ë…¸ë“œ êµ¬ë§¤ ì²˜ë¦¬
         purchasedNodes.Add(data);
 
-        // ½ºÅÈ Àû¿ë Å×½ºÆ®
-        //ApplyStats(data);
-        Debug.Log("³ëµå ±¸¸Å ¿Ï·á");
+        // ì—°ê²°í•´ì£¼ê¸°
+        CreateConnection(data);
 
         return true;
     }
 
-    // ±¸¸ÅÇÑ ³ëµåÀÎÁö È®ÀÎ
+    // êµ¬ë§¤í•œ ë…¸ë“œì¸ì§€ í™•ì¸
     public bool IsPurchased(NodeData data)
     {
         return purchasedNodes.Contains(data);
     }
 
-    /*private void ApplyStats(NodeData data)
+    // ë…¸ë“œ ê°„ ì—°ê²°í•˜ëŠ” ê°€ì§€ ìƒì„±
+    public void CreateConnection(NodeData child)
     {
-        if (data.attackPowerPercent > 0)
-            PlayerStats.Instance.AttackPowerUpgrade(data.attackPowerPercent);
-        if (data.defensePowerPercent > 0)
-            PlayerStats.Instance.DefensePowerUpgrade(data.defensePowerPercent);
-    }*/
+        Node childNode = FindNodeInstance(child);
+        if (childNode == null) return;
+
+        RectTransform childRect = childNode.GetComponent<RectTransform>();
+        RectTransform parentRect = null;
+
+        // ì¤‘ì•™ ë…¸ë“œì™€ ì—°ê²°í•˜ëŠ” ê²½ìš° (preNode == null)
+        if (child.preNode == null)
+        {
+            parentRect = centerAnchor;   // ì¤‘ì•™ ë…¸ë“œ ìœ„ì¹˜ ì‚¬ìš©
+        }
+        else
+        {
+            Node parentNode = FindNodeInstance(child.preNode);
+            if (parentNode == null) return;
+
+            parentRect = parentNode.GetComponent<RectTransform>();
+        }
+
+        GameObject lineObj = Instantiate(linePrefab, lineParent);
+        RectTransform lineRect = lineObj.GetComponent<RectTransform>();
+
+        Vector3 startPos = parentRect.position;
+        Vector3 endPos = childRect.position;
+
+        Vector3 dir = endPos - startPos;
+        float distance = dir.magnitude;
+
+        lineRect.position = startPos;
+        lineRect.sizeDelta = new Vector2(distance, 4f);
+        lineRect.rotation = Quaternion.FromToRotation(Vector3.right, dir);
+
+        lineObj.GetComponent<Image>().color = Color.green;
+    }
+
+
+    public void RegisterNode(NodeData data, Node node)
+    {
+        if (!nodeLookup.ContainsKey(data))
+            nodeLookup.Add(data, node);
+    }
+
+    public Node FindNodeInstance(NodeData data)
+    {
+        if (nodeLookup.ContainsKey(data))
+            return nodeLookup[data];
+        return null;
+    }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public NodeData data;
 
@@ -18,6 +18,11 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public bool isPurchased = false;
 
     public RectTransform tooltipAnchor;
+
+    public void Start()
+    {
+        SkillTreeManager.Instance.RegisterNode(data, this);
+    }
 
     // 노드에 마우스 올렸을 때
     public void OnPointerEnter(PointerEventData eventData)
