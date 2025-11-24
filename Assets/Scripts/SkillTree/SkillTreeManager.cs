@@ -5,20 +5,20 @@ using UnityEngine.UI;
 
 public class SkillTreeManager : MonoBehaviour
 {
-    public static SkillTreeManager Instance;    // ½Ì±ÛÅæ ÀÎ½ºÅÏ½º
+    public static SkillTreeManager Instance;    // ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤
     public int currentUp = 100;
 
-    private HashSet<NodeData> purchasedNodes = new HashSet<NodeData>(); // ±¸¸ÅÇÑ ³ëµå ¸®½ºÆ®
+    private HashSet<NodeData> purchasedNodes = new HashSet<NodeData>(); // êµ¬ë§¤í•œ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸
 
-    public GameObject linePrefab;   // ³ëµå ¿¬°áÇÒ ¶óÀÎ ÇÁ¸®ÆÕ º¯¼ö
-    public Transform lineParent;    // ¶óÀÎµé ´ãÀ» ¿ÀºêÁ§Æ®
-    public RectTransform centerAnchor;  // ¼¾ÅÍ ³ëµå À§Ä¡
+    public GameObject linePrefab;   // ë…¸ë“œ ì—°ê²°í•  ë¼ì¸ í”„ë¦¬íŒ¹ ë³€ìˆ˜
+    public Transform lineParent;    // ë¼ì¸ë“¤ ë‹´ì„ ì˜¤ë¸Œì íŠ¸
+    public RectTransform centerAnchor;  // ì„¼í„° ë…¸ë“œ ìœ„ì¹˜
 
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
 
     public void Awake()
     {
-        // ½Ì±ÛÅæ
+        // ì‹±ê¸€í†¤
         if (Instance == null)
         {
             Instance = this;
@@ -29,36 +29,36 @@ public class SkillTreeManager : MonoBehaviour
         }
     }
 
-    // ±¸¸Å °¡´ÉÇÑ ³ëµåÀÎÁö È®ÀÎ(¸¶¿ì½º Å¬¸¯ÇßÀ» ¶§)
+    // êµ¬ë§¤ ê°€ëŠ¥í•œ ë…¸ë“œì¸ì§€ í™•ì¸(ë§ˆìš°ìŠ¤ í´ë¦­í–ˆì„ ë•Œ)
     public bool TryPurchase(NodeData data)
     {
-        // ±¸¸Å ºÒ°¡´ÉÇÑ °æ¿ì
-        // 1. ÀÌ¹Ì ±¸¸ÅÇÑ ³ëµåÀÏ ¶§
+        // êµ¬ë§¤ ë¶ˆê°€ëŠ¥í•œ ê²½ìš°
+        // 1. ì´ë¯¸ êµ¬ë§¤í•œ ë…¸ë“œì¼ ë•Œ
         if (purchasedNodes.Contains(data)) return false;
-        // 2. ¼±Çà ³ëµå°¡ ±¸¸Å ¾ÈµÆÀ½
+        // 2. ì„ í–‰ ë…¸ë“œê°€ êµ¬ë§¤ ì•ˆëìŒ
         if (data.preNode != null && !purchasedNodes.Contains(data.preNode)) return false;
-        // 3. ¾÷ÀÌ ºÎÁ·ÇÔ
+        // 3. ì—…ì´ ë¶€ì¡±í•¨
         if (currentUp < data.cost) return false;
 
-        // ¾÷ ¼Ò¸ğ
+        // ì—… ì†Œëª¨
         currentUp -= data.cost;
 
-        // ³ëµå ±¸¸Å Ã³¸®
+        // ë…¸ë“œ êµ¬ë§¤ ì²˜ë¦¬
         purchasedNodes.Add(data);
 
-        // ¿¬°áÇØÁÖ±â
+        // ì—°ê²°í•´ì£¼ê¸°
         CreateConnection(data);
 
         return true;
     }
 
-    // ±¸¸ÅÇÑ ³ëµåÀÎÁö È®ÀÎ
+    // êµ¬ë§¤í•œ ë…¸ë“œì¸ì§€ í™•ì¸
     public bool IsPurchased(NodeData data)
     {
         return purchasedNodes.Contains(data);
     }
 
-    // ³ëµå °£ ¿¬°áÇÏ´Â °¡Áö »ı¼º
+    // ë…¸ë“œ ê°„ ì—°ê²°í•˜ëŠ” ê°€ì§€ ìƒì„±
     public void CreateConnection(NodeData child)
     {
         Node childNode = FindNodeInstance(child);
@@ -67,10 +67,10 @@ public class SkillTreeManager : MonoBehaviour
         RectTransform childRect = childNode.GetComponent<RectTransform>();
         RectTransform parentRect = null;
 
-        // Áß¾Ó ³ëµå¿Í ¿¬°áÇÏ´Â °æ¿ì (preNode == null)
+        // ì¤‘ì•™ ë…¸ë“œì™€ ì—°ê²°í•˜ëŠ” ê²½ìš° (preNode == null)
         if (child.preNode == null)
         {
-            parentRect = centerAnchor;   // Áß¾Ó ³ëµå À§Ä¡ »ç¿ë
+            parentRect = centerAnchor;   // ì¤‘ì•™ ë…¸ë“œ ìœ„ì¹˜ ì‚¬ìš©
         }
         else
         {
