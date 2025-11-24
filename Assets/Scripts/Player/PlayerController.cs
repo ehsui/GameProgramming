@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
 
     public WeaponData CurrentMainWeapon { get; private set; }
     public WeaponData CurrentSubWeapon { get; private set; }
+    [Header("References")]
+    public PlayerSkillCaster skillCaster;
 
     // 상태 머신
     public PlayerStateMachine StateMachine { get; private set; }
@@ -33,6 +35,7 @@ public class PlayerController : MonoBehaviour
     public PlayerAirState AirState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
+    public PlayerSkillState SkillState { get; private set; }
     public bool IsFacingRight => !spriteRenderer.flipX;
 
     // 입력값 저장용 변수
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour
         // 상태 머신 생성
         StateMachine = new PlayerStateMachine();
         stats = GetComponent<PlayerStats>(); // 같은 오브젝트에 있다고 가정
+        skillCaster = GetComponent<PlayerSkillCaster>();
         // 상태 인스턴스 생성 (this를 넘겨줌)
         IdleState = new PlayerIdleState(this, StateMachine);
         MoveState = new PlayerMoveState(this, StateMachine);
@@ -51,6 +55,8 @@ public class PlayerController : MonoBehaviour
         AirState = new PlayerAirState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
         DeadState = new PlayerDeadState(this, StateMachine);
+        SkillState = new PlayerSkillState(this, StateMachine); // 상태 생성
+
     }
 
     private void Start()
@@ -62,6 +68,7 @@ public class PlayerController : MonoBehaviour
             
         inputReader.OnMainWeaponSwitchEvent += SwapMainWeapon;
         inputReader.OnSubWeaponSwitchEvent += SwapSubWeapon;
+        inputReader.OnSkillEvent += OnSkill;
 
         SwapMainWeapon(0);
         SwapSubWeapon(0);
@@ -139,6 +146,16 @@ public class PlayerController : MonoBehaviour
         {
             // 공격 쿨타임 체크 등은 여기서 하거나 State 내부에서 처리
             StateMachine.ChangeState(AttackState);
+        }
+    }
+
+    private void OnSkill()
+    {
+        // 공격 중, 이동 중, 대기 중일 때 스킬 사용 가능
+        // (사망 상태나 피격 경직 중에는 불가능)
+        if (StateMachine.CurrentState != DeadState)
+        {
+            StateMachine.ChangeState(SkillState);
         }
     }
 
