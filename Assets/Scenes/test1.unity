@@ -463,7 +463,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1490504588}
   playerAttack: {fileID: 1490504591}
   stats: {fileID: 1490504592}
-  moveSpeed: 6
+  moveSpeed: 10
   jumpPower: 15
   maxJumpCount: 2
   currentJumpCount: 0
