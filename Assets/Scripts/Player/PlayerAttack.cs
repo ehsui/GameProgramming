@@ -91,13 +91,39 @@ public class PlayerAttack : MonoBehaviour
     private void DoMeleeAttack(WeaponData weapon)
     {
         Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
-        Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(center, weapon.attackRange * 0.5f, LayerMask.GetMask("Enemy"));
 
+        // 1. 공격 판정 범위 (기존 로직)
+        Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
+
+        // ▼▼▼ [추가된 이펙트 생성 로직] ▼▼▼
+        if (weapon.meleeSlashPrefab != null)
+        {
+            // 이펙트 생성 위치: 플레이어 몸 중심에서 살짝 앞
+            Vector2 effectPos = (Vector2)transform.position + (direction * 0.5f);
+
+            // 프리팹 생성
+            GameObject slash = Instantiate(weapon.meleeSlashPrefab, effectPos, Quaternion.identity);
+
+            // 방향 반전 (왼쪽 볼 때 이펙트도 뒤집기)
+            if (!controller.IsFacingRight)
+            {
+                // X축 스케일을 -1로 만들어서 뒤집음
+                Vector3 scale = slash.transform.localScale;
+                scale.x = -Mathf.Abs(scale.x);
+                slash.transform.localScale = scale;
+            }
+
+            // 0.5초 뒤 삭제 (애니메이션 길이에 맞춰 조절 가능)
+            Destroy(slash, 0.2f);
+        }
+        // ▲▲▲ -------------------------- ▲▲▲
+
+        // 2. 데미지 판정 (기존 로직 유지)
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(center, weapon.attackRange * 0.5f, LayerMask.GetMask("Enemy"));
         foreach (var enemy in enemies)
         {
-            Debug.Log($"[금강저] {enemy.name} 베기! 데미지: {weapon.damage}");
-            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            Debug.Log($"[근접] {enemy.name} 베기! 데미지: {weapon.damage}");
+            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage); (나중에 주석 해제)
         }
     }
 }

@@ -24,4 +24,5 @@ public class WeaponData : ScriptableObject
 
     // 투사체 프리팹 (석장용)
     public GameObject projectilePrefab;
+    public GameObject meleeSlashPrefab;
 }
