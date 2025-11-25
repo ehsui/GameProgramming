@@ -9,11 +9,11 @@ public class WizardBoss : MonoBehaviour
     [Header("기본 설정")]
     public Transform player;
     public float moveSpeed = 3f;
-    public float patternInterval = 2f; // 패턴 사이 대기 시간
+    public float patternInterval = 2.5f; // 패턴 사이 대기 시간
 
-    [Header("애니메이션 시간 (초)")]
-    public float attack1Time = 0.8f;
-    public float attack2Time = 0.8f;
+    [Header("애니메이션 시간")]
+    public float attack1Time = 1.0f;
+    public float attack2Time = 1.0f;
     public float castTime = 2.0f; // 폭발 기 모으는 시간
 
     // 내부 변수
@@ -24,6 +24,14 @@ public class WizardBoss : MonoBehaviour
     // 이동 관련 상태 변수 (Update에서 사용)
     private bool isChasing = false;
     private bool isRunningToCast = false;
+
+    public GameObject teleportEffect;
+    public GameObject explosionEffect;
+    public float effectDestroyTime = 0.9f;
+    public Vector3 effectOffset = new Vector3(0, -7.5f, 0);
+    public Vector3 explosionEffectOffset = new Vector3(0, 0.0f, 0);
+
+    public Transform explosionZone;
 
     void Start()
     {
@@ -71,6 +79,7 @@ public class WizardBoss : MonoBehaviour
             case 1: Pattern2_ComboStart(); break;
             case 2: Pattern3_ChaseStart(); break;
             case 3: Pattern4_ExplosionStart(); break;
+
         }
     }
 
@@ -81,7 +90,6 @@ public class WizardBoss : MonoBehaviour
     // --- 패턴 1: 단일 공격 ---
     void Pattern1_Attack()
     {
-        print("패턴 1: 단일 공격");
         anim.SetTrigger("Attack1");
 
         // 공격 모션이 끝나는 시간 뒤에 순간이동 실행
@@ -91,7 +99,6 @@ public class WizardBoss : MonoBehaviour
     // --- 패턴 2: 연속 공격 ---
     void Pattern2_ComboStart()
     {
-        print("패턴 2: 콤보 시작 (1타)");
         anim.SetTrigger("Attack1");
 
         // 1타가 끝나기 직전에 2타 함수를 예약
@@ -100,7 +107,7 @@ public class WizardBoss : MonoBehaviour
 
     void Pattern2_ComboFinish()
     {
-        print("패턴 2: 콤보 마무리 (2타)");
+
         anim.SetTrigger("Attack2");
 
         // 2타가 끝나는 시간 뒤에 순간이동
@@ -110,7 +117,7 @@ public class WizardBoss : MonoBehaviour
     // --- 패턴 3: 추격 후 공격 ---
     void Pattern3_ChaseStart()
     {
-        print("패턴 3: 추격 시작");
+
         isChasing = true; // Update에서 이동 시작
         anim.SetBool("Move", true);
 
@@ -132,7 +139,7 @@ public class WizardBoss : MonoBehaviour
     // --- 패턴 4: 폭발 마법 ---
     void Pattern4_ExplosionStart()
     {
-        print("패턴 4: 자리 잡기 이동");
+
         isRunningToCast = true;
         anim.SetBool("Move", true);
 
@@ -144,7 +151,7 @@ public class WizardBoss : MonoBehaviour
     {
         isRunningToCast = false;
         anim.SetBool("Move", false);
-        print("기 모으는 중...");
+
 
         // 시전 시간(castTime) 뒤에 폭발
         Invoke("Pattern4_Boom", castTime);
@@ -152,8 +159,21 @@ public class WizardBoss : MonoBehaviour
 
     void Pattern4_Boom()
     {
-        print("폭발!");
-        // Instantiate(explosionEffect, ...); // 이펙트 생성은 나중에
+
+        if (explosionEffect != null)
+        {
+            // 기본값: 보스 위치
+            Vector3 spawnPos = transform.position;
+
+            // [자식 위치 사용] 자식 오브젝트(explosionZone)가 있으면 그 위치 사용!
+            if (explosionZone != null)
+            {
+                spawnPos = explosionZone.position;
+            }
+
+            GameObject boom = Instantiate(explosionEffect, spawnPos, Quaternion.identity);
+            Destroy(boom, 2.0f);
+        }
 
         // 폭발 보여주고 0.5초 뒤에 순간이동
         Invoke("Teleport", 0.5f);
@@ -174,7 +194,18 @@ public class WizardBoss : MonoBehaviour
         Vector2 targetPos = new Vector2(player.position.x + (randomX * direction), transform.position.y);
         transform.position = targetPos;
 
-        print("순간이동 완료!");
+        if (teleportEffect != null)
+        {
+            // 발 밑(offset) 위치 계산
+            Vector3 spawnPos = transform.position + effectOffset;
+
+            // 이펙트 생성하고 변수에 담음
+            GameObject effect = Instantiate(teleportEffect, spawnPos, Quaternion.identity);
+
+            // 0.5초 뒤에 삭제
+            Destroy(effect, effectDestroyTime);
+        }
+
 
         // 3. 다시 패턴 선택기로 돌아감 (무한 반복의 고리)
         Invoke("SelectRandomPattern", patternInterval);
