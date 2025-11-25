@@ -45,9 +45,10 @@ GameObject:
   - component: {fileID: 2239556451824824644}
   - component: {fileID: 2239556451824824651}
   - component: {fileID: 2239556451824824640}
+  - component: {fileID: 7965638967758079430}
   m_Layer: 0
   m_Name: MeleeEnemy2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -212,3 +213,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   anim: {fileID: 2239556451824824645}
+--- !u!114 &7965638967758079430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2239556451824824649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8983a440d15ceb3499d6af756df014b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 100
