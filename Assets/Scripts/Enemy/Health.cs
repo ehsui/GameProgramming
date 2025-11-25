@@ -9,6 +9,9 @@ public class Health : MonoBehaviour
     public int maxHealth = 3;
     public float currentHealth;
 
+    [Header("animation Settings")]
+    public float DeathDelayTime = 1.5f;
+    
     protected virtual void Awake()
     {
         currentHealth = maxHealth;
