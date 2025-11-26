@@ -10,7 +10,8 @@ public enum SkillType
     Dash,           // 돌진 (예: 2-3)
     Combo,           // 연타 (예: 3-3)
     Laser,
-    Stealth
+    Stealth,
+    Heal
 }
 
 [CreateAssetMenu(fileName = "New Skill Data", menuName = "Data/Skill Data")]

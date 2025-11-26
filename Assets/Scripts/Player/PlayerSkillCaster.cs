@@ -80,6 +80,9 @@ public class PlayerSkillCaster : MonoBehaviour
             case SkillType.Stealth: // (추가)
                 StartCoroutine(CastStealth(skill));
                 break;
+            case SkillType.Heal: // (추가)
+                StartCoroutine(CastHeal(skill));
+                break;
         }
     }
 
@@ -104,17 +107,32 @@ public class PlayerSkillCaster : MonoBehaviour
         Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
         float damage = stats.level * skill.damageMultiplier;
 
+        // 발사 위치 (플레이어 조금 앞)
+        Vector2 spawnPos = (Vector2)transform.position + (dir * 1.0f);
+
         for (int i = 0; i < skill.count; i++)
         {
             if (skill.skillPrefab != null)
             {
-                GameObject proj = Instantiate(skill.skillPrefab, transform.position, Quaternion.identity);
-                proj.transform.localScale *= 0.5f; // 조금 작게
+                // 1. 투사체 생성
+                GameObject projObj = Instantiate(skill.skillPrefab, spawnPos, Quaternion.identity);
 
-                Projectile p = proj.GetComponent<Projectile>();
-                if (p != null) p.Initialize(damage, 15f, dir);
+                // 2. 크기 조절 (선택 사항)
+                // 작은 투사체 여러 개를 쏘는 느낌을 위해 크기를 약간 줄임 (0.7배)
+                // (프리팹 자체를 작게 만들었다면 이 줄은 지워도 됩니다)
+                projObj.transform.localScale *= 0.7f;
+
+                // 3. 투사체 초기화
+                Projectile p = projObj.GetComponent<Projectile>();
+                if (p != null)
+                {
+                    // 속도는 조금 빠르게(15f -> 20f)
+                    p.Initialize(damage, 20f, dir);
+                }
             }
-            yield return new WaitForSeconds(0.1f); // 0.1초 간격 발사
+
+            // 4. 연사 간격 (0.1초)
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -152,87 +170,207 @@ public class PlayerSkillCaster : MonoBehaviour
     private void CastAreaAttack(SkillData skill)
     {
         Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+
+        // 공격 중심점 (X축은 앞쪽으로 나감)
         Vector2 center = (Vector2)transform.position + (dir * skill.range * 0.5f);
         float damage = stats.level * skill.damageMultiplier;
 
-        // 범위 타격
+        // ▼▼▼ [수정: 발바닥 위치 계산] ▼▼▼
+        if (skill.skillPrefab != null)
+        {
+            // 1. 플레이어의 콜라이더 가져오기
+            Collider2D col = GetComponent<Collider2D>();
+
+            // 2. 콜라이더의 가장 아래쪽(Min Y) 좌표 찾기 = 발바닥 높이
+            // (콜라이더가 없다면 그냥 현재 위치에서 0.8 정도 내림)
+            float feetY = (col != null) ? col.bounds.min.y : transform.position.y - 0.8f;
+
+            // 3. 이펙트 생성 위치: X는 공격 중심, Y는 발바닥
+            Vector2 effectPos = new Vector2(center.x, feetY);
+
+            Instantiate(skill.skillPrefab, effectPos, Quaternion.identity);
+        }
+        // ▲▲▲ -------------------------- ▲▲▲
+
+        // 범위 타격 (데미지 판정은 여전히 '중심'을 기준으로 하는 게 좋습니다)
         Collider2D[] enemies = Physics2D.OverlapCircleAll(center, skill.range * 0.5f, LayerMask.GetMask("Enemy"));
 
         foreach (var enemy in enemies)
         {
-            Debug.Log($"{enemy.name} 범위 스킬 적중! 데미지: {damage}");
             enemy.GetComponent<Health>()?.TakeDamage(damage);
-
-            // 넉백 (PushForce가 있을 때만)
+            // 넉백 로직...
             if (skill.pushForce > 0)
             {
                 Rigidbody2D enemyRigid = enemy.GetComponent<Rigidbody2D>();
                 if (enemyRigid != null)
-                {
                     enemyRigid.AddForce(dir * skill.pushForce, ForceMode2D.Impulse);
-                }
             }
         }
 
-        // 디버그 표시
         Debug.DrawRay(center, Vector2.up * 2, Color.magenta, 1.0f);
     }
 
-    // 5. 돌진 (2-3) - 물리 제어는 State와 협력 필요
+    // 5. 돌진 (2-3) - 3연타 돌진
     private IEnumerator CastDash(SkillData skill)
     {
         float damage = stats.level * skill.damageMultiplier;
         Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
 
-        // 중력 무시하고 앞으로 발사
+        // 1. 물리 설정 변경
         float originalGravity = controller.rigid.gravityScale;
         controller.rigid.gravityScale = 0;
 
-        // 돌진 중에도 타격을 주기 위해 반복 체크
+        // 2. 이펙트 생성
+        GameObject dashEffect = null;
+        if (skill.skillPrefab != null)
+        {
+            dashEffect = Instantiate(skill.skillPrefab, transform.position, Quaternion.identity);
+            dashEffect.transform.SetParent(this.transform); // 플레이어 따라다니게
+            dashEffect.transform.localPosition = Vector3.zero;
+
+            // ▼▼▼ [수정된 부분] 원래 크기를 유지하면서 방향만 뒤집기 ▼▼▼
+            Vector3 originalScale = dashEffect.transform.localScale;
+
+            if (!controller.IsFacingRight)
+            {
+                // 왼쪽 볼 때: 원래 X크기에 마이너스를 붙임
+                dashEffect.transform.localScale = new Vector3(-Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            else
+            {
+                // 오른쪽 볼 때: 원래 X크기 (양수) 유지
+                dashEffect.transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            // ▲▲▲ ---------------------------------------------- ▲▲▲
+        }
+
+        // 3. 돌진 루프
         float timer = 0f;
+        float hitInterval = skill.duration / 3.0f;
+        float nextHitTime = 0f;
+
         while (timer < skill.duration)
         {
-            // 강제로 속도 고정 (Dash)
-            controller.rigid.velocity = dir * 20f; // 속도는 20으로 고정
+            float dashSpeed = skill.pushForce > 0 ? skill.pushForce : 20f;
+            controller.rigid.velocity = dir * dashSpeed;
 
-            // 지나가는 길에 있는 적 타격
-            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.0f, LayerMask.GetMask("Enemy"));
-            foreach (var enemy in enemies)
+            if (timer >= nextHitTime)
             {
-                // 데미지 주기 (중복 타격 방지 로직은 생략됨)
-                enemy.GetComponent<Health>()?.TakeDamage(damage);
+                Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.0f, LayerMask.GetMask("Enemy"));
+                foreach (var enemy in enemies)
+                {
+                    enemy.GetComponent<Health>()?.TakeDamage(damage);
+                    Debug.Log($"[Dash] {enemy.name} 돌진 타격!");
+
+                    Rigidbody2D eRigid = enemy.GetComponent<Rigidbody2D>();
+                    if (eRigid != null) eRigid.AddForce(dir * 5f, ForceMode2D.Impulse);
+                }
+                nextHitTime += hitInterval;
             }
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        // 복구
+        // 4. 종료 및 복구
         controller.rigid.velocity = Vector2.zero;
         controller.rigid.gravityScale = originalGravity;
+
+        if (dashEffect != null) Destroy(dashEffect);
     }
 
     // 6. 연타 (3-3)
     private IEnumerator CastCombo(SkillData skill)
     {
-        float damage = stats.level * skill.damageMultiplier;
         Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+
+        // 공격 중심점 (플레이어 앞쪽)
+        // (연타는 범위가 좀 넓어야 잘 맞으므로 range를 넉넉히 잡으세요)
         Vector2 center = (Vector2)transform.position + (dir * skill.range * 0.5f);
 
+        float damage = stats.level * skill.damageMultiplier;
+
+        // skill.count(5회) 만큼 반복
         for (int i = 0; i < skill.count; i++)
         {
-            // 매번 타격
+            // 1. 이펙트 생성 (매 타격마다 생성!)
+            if (skill.skillPrefab != null)
+            {
+                // 위치를 살짝 랜덤하게 흩뿌려서 '난무'하는 느낌 주기
+                Vector2 randomOffset = new Vector2(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
+                Vector2 effectPos = center + randomOffset;
+
+                GameObject slash = Instantiate(skill.skillPrefab, effectPos, Quaternion.identity);
+
+                // 방향 반전 (왼쪽 볼 때)
+                if (dir.x < 0)
+                {
+                    Vector3 scale = slash.transform.localScale;
+                    scale.x = -Mathf.Abs(scale.x);
+                    slash.transform.localScale = scale;
+                }
+
+                // (AutoDestroy가 프리팹에 있다면 생략 가능하지만 안전하게 삭제)
+                Destroy(slash, 0.3f);
+            }
+
+            // 2. 범위 타격 (원형 범위)
+            // (금강저 기본 공격은 네모지만, 난무는 사방으로 휘두르니 원형이 자연스럽습니다)
             Collider2D[] enemies = Physics2D.OverlapCircleAll(center, skill.range * 0.5f, LayerMask.GetMask("Enemy"));
             foreach (var enemy in enemies)
             {
                 enemy.GetComponent<Health>()?.TakeDamage(damage);
-                Debug.Log($"연타 {i + 1}회 적중");
+                Debug.Log($"[Combo] 연타 {i + 1}회 적중!");
+
+                // (선택) 적에게 아주 살짝 경직(멈춤)을 주거나 밀어내기 효과 추가 가능
             }
 
-            // 이펙트 생성 위치 등도 여기서 처리 가능
-
-            yield return new WaitForSeconds(0.1f); // 0.1초 간격 연타
+            // 3. 다음 타격까지 대기 (점점 빨라지게 하거나 등속으로)
+            // 0.1초 간격으로 매우 빠르게 때립니다.
+            yield return new WaitForSeconds(0.1f);
         }
+    }
+    // [신규 메서드] 지속 회복
+    private IEnumerator CastHeal(SkillData skill)
+    {
+        // 1. 치유 이펙트 생성 (초록색 십자가나 오라)
+        GameObject healEffect = null;
+        if (skill.skillPrefab != null)
+        {
+            healEffect = Instantiate(skill.skillPrefab, transform.position, Quaternion.identity);
+            healEffect.transform.SetParent(this.transform); // 플레이어 따라다니게
+            healEffect.transform.localPosition = Vector3.zero;
+        }
+
+        // 2. 지속 회복 루프
+        float timer = 0f;
+        float interval = 1.0f; // 1초마다 회복
+        float nextHealTime = 0f;
+
+        // DamageMultiplier를 '1회당 회복량'으로 사용
+        float healAmount = stats.level * skill.damageMultiplier;
+
+        Debug.Log($"지속 치유 시작! (총 {skill.duration}초)");
+
+        while (timer < skill.duration)
+        {
+            if (timer >= nextHealTime)
+            {
+                // 플레이어 체력 회복
+                stats.Heal(healAmount);
+
+                // (선택) 회복될 때마다 머리 위에 숫자 띄우기 or 반짝임 효과 추가 가능
+
+                nextHealTime += interval;
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 3. 종료 (이펙트 삭제)
+        if (healEffect != null) Destroy(healEffect);
+        Debug.Log("치유 종료");
     }
     private void CastLaser(SkillData skill)
     {

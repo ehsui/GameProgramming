@@ -22,4 +22,5 @@ MonoBehaviour:
   count: 5
   range: 5
   pushForce: 0
-  skillPrefab: {fileID: 0}
+  skillPrefab: {fileID: 5124264275480677205, guid: 109a2d9dc8f1c0c49911ae62ada0ba1f, type: 3}
+  loopEffectPrefab: {fileID: 0}

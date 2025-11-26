@@ -22,9 +22,9 @@ public class PlayerSkillState : PlayerBaseState
         player.skillCaster.CastSkill(currentSkill);
 
         // 3. 애니메이션 트리거
-        player.animator?.SetTrigger("skill");
-
-        if (currentSkill.skillType == SkillType.Buff || currentSkill.skillType == SkillType.Stealth)
+        if (currentSkill.skillType == SkillType.Buff ||
+            currentSkill.skillType == SkillType.Stealth ||
+            currentSkill.skillType == SkillType.Heal)
         {
             if (player.CurrentMovementInput.x != 0)
                 stateMachine.ChangeState(player.MoveState);
@@ -60,14 +60,13 @@ public class PlayerSkillState : PlayerBaseState
 
     public override void FixedUpdate()
     {
-        // ✨ [수정 2] 이동을 강제로 막는 로직 완화
-
-        // 돌진(Dash)은 Caster가 속도를 제어하므로 건드리지 않음
+        // 1. 돌진(Dash) 스킬은 Caster가 직접 물리 제어를 하므로 건드리지 않음
         if (currentSkill != null && currentSkill.skillType == SkillType.Dash) return;
 
-        // 나머지 스킬(투사체 발사 등) 중에서도 '이동 사격'을 허용하고 싶다면?
-        // 아래 코드를 지우거나 조건을 추가하면 됩니다.
-        // 일단은 "시전 중 이동 불가"를 유지하되, 버프는 이미 나갔으므로 영향받지 않음.
-        player.rigid.velocity = Vector2.zero;
+        // 2. [수정] 이동 로직 적용 (AttackState와 동일하게 변경)
+        // X축: 입력받은 대로 이동 (공중 이동 가능)
+        // Y축: 현재 리지드바디의 속도 유지 (중력 적용!) ✨ 핵심
+
+        player.rigid.velocity = new Vector2(player.CurrentMovementInput.x * player.moveSpeed, player.rigid.velocity.y);
     }
 }
