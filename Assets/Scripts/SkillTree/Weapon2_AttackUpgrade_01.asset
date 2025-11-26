@@ -10,13 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
-  m_Name: DefensePowerUpgrade_01
+  m_Name: Weapon2_AttackUpgrade_01
   m_EditorClassIdentifier: 
-  description: "\uBC29\uC5B4\uB825 5% \uC99D\uAC00"
-  attackPowerPercent: 0
-  defensePowerPercent: 5
-  attackSpeedPercent: 0
-  projectileRangePercent: 0
-  explosionRangePercent: 0
-  cost: 5
+  description: "\uC11D\uC7A5 \uACF5\uACA9\uB825 5% \uC99D\uAC00_01"
+  branch: 1
+  orderInBranch: 1
+  attackPercent: 0.05
   preNode: {fileID: 0}
+  targetWeapon: {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}

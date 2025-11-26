@@ -10,13 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
-  m_Name: MaxHealthUpgrade_02
+  m_Name: Weapon2_AttackUpgrade_02
   m_EditorClassIdentifier: 
-  description: "\uCD5C\uB300 \uCCB4\uB825 10% \uC99D\uAC00"
-  attackPowerPercent: 5
-  defensePowerPercent: 0
-  attackSpeedPercent: 0
-  projectileRangePercent: 0
-  explosionRangePercent: 0
-  cost: 5
-  preNode: {fileID: 11400000, guid: 599575d37ba16a1449a73e8f7b9830a8, type: 2}
+  description: "\uC11D\uC7A5 \uACF5\uACA9\uB825 5% \uC99D\uAC00_02"
+  branch: 1
+  orderInBranch: 2
+  attackPercent: 0.05
+  preNode: {fileID: 11400000, guid: 7adae9a81d244b541a51d28693cda4de, type: 2}
+  targetWeapon: {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}

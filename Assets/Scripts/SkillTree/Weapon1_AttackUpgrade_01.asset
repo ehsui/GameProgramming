@@ -10,13 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
-  m_Name: MaxBodhicittaUpgrade_02
+  m_Name: Weapon1_AttackUpgrade_01
   m_EditorClassIdentifier: 
-  description: "\uCD5C\uB300 \uBCF4\uB9AC\uC2EC 10% \uC99D\uAC00"
-  attackPowerPercent: 5
-  defensePowerPercent: 0
-  attackSpeedPercent: 0
-  projectileRangePercent: 0
-  explosionRangePercent: 0
-  cost: 5
-  preNode: {fileID: 11400000, guid: 48cdf2370cb070f449927515f218dc92, type: 2}
+  description: "\uAE08\uAC15\uB839 \uACF5\uACA9\uB825 5% \uC99D\uAC00_01"
+  branch: 0
+  orderInBranch: 1
+  attackPercent: 0.05
+  preNode: {fileID: 0}
+  targetWeapon: {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
