@@ -87,43 +87,47 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // 3번 무기용 (근접) - 기존 유지
+    // 3번 무기 (금강저) - Box 형태 + 이펙트 포함
     private void DoMeleeAttack(WeaponData weapon)
     {
         Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
 
-        // 1. 공격 판정 범위 (기존 로직)
-        Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
+        // 1. 히트박스 중심점 (SpawnOffset 사용)
+        Vector2 center = (Vector2)transform.position + (direction * weapon.spawnOffset);
 
-        // ▼▼▼ [추가된 이펙트 생성 로직] ▼▼▼
+        // ▼▼▼ [사라졌던 이펙트 로직 복구!] ▼▼▼
         if (weapon.meleeSlashPrefab != null)
         {
-            // 이펙트 생성 위치: 플레이어 몸 중심에서 살짝 앞
+            // 이펙트는 플레이어 몸에서 조금만 앞에서 나오게 (히트박스 중심보다 약간 뒤쪽이 자연스러움)
+            // 필요하면 0.5f 대신 weapon.spawnOffset을 써도 됩니다.
             Vector2 effectPos = (Vector2)transform.position + (direction * 0.5f);
 
-            // 프리팹 생성
             GameObject slash = Instantiate(weapon.meleeSlashPrefab, effectPos, Quaternion.identity);
 
-            // 방향 반전 (왼쪽 볼 때 이펙트도 뒤집기)
+            // 방향 반전 (왼쪽 볼 때 뒤집기)
             if (!controller.IsFacingRight)
             {
-                // X축 스케일을 -1로 만들어서 뒤집음
                 Vector3 scale = slash.transform.localScale;
                 scale.x = -Mathf.Abs(scale.x);
                 slash.transform.localScale = scale;
             }
 
-            // 0.5초 뒤 삭제 (애니메이션 길이에 맞춰 조절 가능)
-            Destroy(slash, 0.2f);
+            // (만약 AutoDestroy 스크립트가 없다면 안전하게 삭제)
+            Destroy(slash, 0.5f);
         }
-        // ▲▲▲ -------------------------- ▲▲▲
+        // ▲▲▲ ---------------------------- ▲▲▲
 
-        // 2. 데미지 판정 (기존 로직 유지)
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(center, weapon.attackRange * 0.5f, LayerMask.GetMask("Enemy"));
+        // 2. 네모난 히트박스 설정
+        // 가로: 사거리(attackRange), 세로: 1.5f
+        Vector2 boxSize = new Vector2(weapon.attackRange, 1.5f);
+
+        // 3. 판정 (OverlapBoxAll)
+        Collider2D[] enemies = Physics2D.OverlapBoxAll(center, boxSize, 0, LayerMask.GetMask("Enemy"));
+
         foreach (var enemy in enemies)
         {
-            Debug.Log($"[근접] {enemy.name} 베기! 데미지: {weapon.damage}");
             enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            Debug.Log($"[금강저/Box] {enemy.name} 베기! 데미지: {weapon.damage}");
         }
     }
     // 에디터에서 공격 범위를 눈으로 확인하는 기능
@@ -148,8 +152,8 @@ public class PlayerAttack : MonoBehaviour
         else if (weapon.weaponId == 3)
         {
             Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
-            // 원형 범위 그리기 (현재 로직)
-            Gizmos.DrawWireSphere(center, weapon.attackRange * 0.5f);
+            Vector2 boxSize = new Vector2(weapon.attackRange, 1.5f);
+            Gizmos.DrawWireCube(center, boxSize); // 네모 그리기
         }
     }
 }
