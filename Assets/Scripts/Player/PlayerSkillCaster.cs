@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerSkillCaster : MonoBehaviour
 {
     [Header("Settings")]
-    // 모든 스킬 조합법을 여기에 등록합니다 (총 9개 예정)
     public List<SkillCombinationData> combinations;
 
     private PlayerController controller;
@@ -16,47 +16,204 @@ public class PlayerSkillCaster : MonoBehaviour
         stats = GetComponent<PlayerStats>();
     }
 
-    // 스킬 발동 시도 (Controller가 호출함)
+    // 스킬 데이터를 찾아 반환 (상태 진입용)
     public SkillData GetCurrentSkill()
     {
-        // 1. 현재 들고 있는 무기 ID 확인
-        // (무기가 없으면 ID를 0이나 -1로 처리하는 방어 코드 필요)
         int mainId = controller.CurrentMainWeapon != null ? controller.CurrentMainWeapon.weaponId : -1;
         int subId = controller.CurrentSubWeapon != null ? controller.CurrentSubWeapon.weaponId : -1;
 
-        // 2. 조합 리스트 뒤져서 맞는 스킬 찾기
         foreach (var combo in combinations)
         {
             if (combo.mainWeaponId == mainId && combo.subWeaponId == subId)
             {
-                // 3. 스킬 찾음! -> 사용 가능 여부 체크 (마나, 쿨타임)
-                if (CanUseSkill(combo.skillData))
+                if (CanUseSkill(combo.skillData)) return combo.skillData;
+                else return null;
+            }
+        }
+        return null;
+    }
+
+    private bool CanUseSkill(SkillData data)
+    {
+        if (data == null) return false;
+        if (stats.CurrentBodhicitta < data.bodhicittaCost)
+        {
+            Debug.Log("보리심 부족!");
+            return false;
+        }
+        return true;
+    }
+
+    // --- [핵심: 스킬 실행 메서드] ---
+    public void CastSkill(SkillData skill)
+    {
+        if (skill == null) return;
+
+        // 마나 소모
+        stats.UseBodhicitta(skill.bodhicittaCost);
+        Debug.Log($"[Skill Cast] {skill.skillName} ({skill.skillType})");
+
+        // 타입별 로직 분기
+        switch (skill.skillType)
+        {
+            case SkillType.Projectile:
+                CastProjectile(skill);
+                break;
+            case SkillType.MultiProjectile:
+                StartCoroutine(CastMultiProjectile(skill));
+                break;
+            case SkillType.Buff:
+                StartCoroutine(CastBuff(skill));
+                break;
+            case SkillType.AreaAttack:
+                CastAreaAttack(skill);
+                break;
+            case SkillType.Dash:
+                StartCoroutine(CastDash(skill));
+                break;
+            case SkillType.Combo:
+                StartCoroutine(CastCombo(skill));
+                break;
+        }
+    }
+
+    // 1. 단일 투사체 (1-1, 2-1)
+    private void CastProjectile(SkillData skill)
+    {
+        if (skill.skillPrefab == null) { Debug.Log("투사체 프리팹 없음"); return; }
+
+        Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        float damage = stats.level * skill.damageMultiplier;
+
+        GameObject proj = Instantiate(skill.skillPrefab, transform.position, Quaternion.identity);
+
+        // 투사체 스크립트 초기화 (Projectile.cs가 있다는 가정)
+        Projectile p = proj.GetComponent<Projectile>();
+        if (p != null) p.Initialize(damage, 15f, dir);
+    }
+
+    // 2. 다중 투사체 (3-1: 5연발)
+    private IEnumerator CastMultiProjectile(SkillData skill)
+    {
+        Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        float damage = stats.level * skill.damageMultiplier;
+
+        for (int i = 0; i < skill.count; i++)
+        {
+            if (skill.skillPrefab != null)
+            {
+                GameObject proj = Instantiate(skill.skillPrefab, transform.position, Quaternion.identity);
+                proj.transform.localScale *= 0.5f; // 조금 작게
+
+                Projectile p = proj.GetComponent<Projectile>();
+                if (p != null) p.Initialize(damage, 15f, dir);
+            }
+            yield return new WaitForSeconds(0.1f); // 0.1초 간격 발사
+        }
+    }
+
+    // 3. 버프 (1-2: 무적, 1-3: 은신)
+    private IEnumerator CastBuff(SkillData skill)
+    {
+        // 무적 적용
+        stats.isInvincible = true;
+
+        // 시각적 효과 (반투명)
+        Color originalColor = controller.spriteRenderer.color;
+        controller.spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
+
+        yield return new WaitForSeconds(skill.duration);
+
+        // 원상 복구
+        stats.isInvincible = false;
+        controller.spriteRenderer.color = originalColor;
+        Debug.Log("버프 종료");
+    }
+
+    // 4. 범위 공격 & 넉백 (2-2, 3-2)
+    private void CastAreaAttack(SkillData skill)
+    {
+        Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        Vector2 center = (Vector2)transform.position + (dir * skill.range * 0.5f);
+        float damage = stats.level * skill.damageMultiplier;
+
+        // 범위 타격
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(center, skill.range * 0.5f, LayerMask.GetMask("Enemy"));
+
+        foreach (var enemy in enemies)
+        {
+            Debug.Log($"{enemy.name} 범위 스킬 적중! 데미지: {damage}");
+            enemy.GetComponent<Health>()?.TakeDamage(damage);
+
+            // 넉백 (PushForce가 있을 때만)
+            if (skill.pushForce > 0)
+            {
+                Rigidbody2D enemyRigid = enemy.GetComponent<Rigidbody2D>();
+                if (enemyRigid != null)
                 {
-                    return combo.skillData;
-                }
-                else
-                {
-                    return null; // 마나 부족 등으로 사용 불가
+                    enemyRigid.AddForce(dir * skill.pushForce, ForceMode2D.Impulse);
                 }
             }
         }
 
-        Debug.LogWarning($"조합을 찾을 수 없음: Main {mainId} + Sub {subId}");
-        return null;
+        // 디버그 표시
+        Debug.DrawRay(center, Vector2.up * 2, Color.magenta, 1.0f);
     }
 
-    // 마나 체크 및 쿨타임 체크 (쿨타임은 나중에 구현)
-    private bool CanUseSkill(SkillData data)
+    // 5. 돌진 (2-3) - 물리 제어는 State와 협력 필요
+    private IEnumerator CastDash(SkillData skill)
     {
-        if (data == null) return false;
+        float damage = stats.level * skill.damageMultiplier;
+        Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
 
-        // 마나 부족 체크
-        if (stats.CurrentBodhicitta < data.bodhicittaCost)
+        // 중력 무시하고 앞으로 발사
+        float originalGravity = controller.rigid.gravityScale;
+        controller.rigid.gravityScale = 0;
+
+        // 돌진 중에도 타격을 주기 위해 반복 체크
+        float timer = 0f;
+        while (timer < skill.duration)
         {
-            Debug.Log("보리심(마나)이 부족합니다!");
-            return false;
+            // 강제로 속도 고정 (Dash)
+            controller.rigid.velocity = dir * 20f; // 속도는 20으로 고정
+
+            // 지나가는 길에 있는 적 타격
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.0f, LayerMask.GetMask("Enemy"));
+            foreach (var enemy in enemies)
+            {
+                // 데미지 주기 (중복 타격 방지 로직은 생략됨)
+                enemy.GetComponent<Health>()?.TakeDamage(damage);
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
         }
 
-        return true;
+        // 복구
+        controller.rigid.velocity = Vector2.zero;
+        controller.rigid.gravityScale = originalGravity;
+    }
+
+    // 6. 연타 (3-3)
+    private IEnumerator CastCombo(SkillData skill)
+    {
+        float damage = stats.level * skill.damageMultiplier;
+        Vector2 dir = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        Vector2 center = (Vector2)transform.position + (dir * skill.range * 0.5f);
+
+        for (int i = 0; i < skill.count; i++)
+        {
+            // 매번 타격
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(center, skill.range * 0.5f, LayerMask.GetMask("Enemy"));
+            foreach (var enemy in enemies)
+            {
+                enemy.GetComponent<Health>()?.TakeDamage(damage);
+                Debug.Log($"연타 {i + 1}회 적중");
+            }
+
+            // 이펙트 생성 위치 등도 여기서 처리 가능
+
+            yield return new WaitForSeconds(0.1f); // 0.1초 간격 연타
+        }
     }
 }

@@ -60,7 +60,7 @@ public class PlayerAttack : MonoBehaviour
         foreach (var enemy in enemies)
         {
             Debug.Log($"[금강령] {enemy.name} 적중! 데미지: {weapon.damage}");
-            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
         }
 
         // 디버그 시각화
@@ -123,7 +123,33 @@ public class PlayerAttack : MonoBehaviour
         foreach (var enemy in enemies)
         {
             Debug.Log($"[근접] {enemy.name} 베기! 데미지: {weapon.damage}");
-            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage); (나중에 주석 해제)
+            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+        }
+    }
+    // 에디터에서 공격 범위를 눈으로 확인하는 기능
+    private void OnDrawGizmosSelected()
+    {
+        if (controller == null) controller = GetComponent<PlayerController>();
+
+        // 현재 들고 있는 무기 가져오기
+        WeaponData weapon = controller.CurrentMainWeapon;
+        if (weapon == null) return;
+
+        Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        Gizmos.color = Color.red;
+
+        // 1번 금강령 (원형)
+        if (weapon.weaponId == 1)
+        {
+            Vector2 spawnPos = (Vector2)transform.position + (direction * weapon.spawnOffset);
+            Gizmos.DrawWireSphere(spawnPos, weapon.attackRange * 0.5f);
+        }
+        // 3번 금강저 (지금은 원형이지만 곧 네모로 바꿀 예정)
+        else if (weapon.weaponId == 3)
+        {
+            Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
+            // 원형 범위 그리기 (현재 로직)
+            Gizmos.DrawWireSphere(center, weapon.attackRange * 0.5f);
         }
     }
 }

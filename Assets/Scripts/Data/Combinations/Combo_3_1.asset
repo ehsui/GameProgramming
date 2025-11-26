@@ -9,17 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 421b7eaaff662f144b9d02d89360db79, type: 3}
-  m_Name: Skill_13
+  m_Script: {fileID: 11500000, guid: ccd37f50331a0244c970869d1194ee86, type: 3}
+  m_Name: Combo_3_1
   m_EditorClassIdentifier: 
-  skillType: 2
-  skillName: 1_3
-  description: 
-  bodhicittaCost: 25
-  cooldown: 0
-  damageMultiplier: 2
-  duration: 3
-  count: 1
-  range: 5
-  pushForce: 0
-  skillPrefab: {fileID: 0}
+  mainWeaponId: 3
+  subWeaponId: 1
+  skillData: {fileID: 11400000, guid: 415a4ac54640c044dbe6eafe4e00564a, type: 2}

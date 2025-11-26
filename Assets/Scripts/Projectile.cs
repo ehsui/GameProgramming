@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Projectile : MonoBehaviour
 {
@@ -46,8 +47,7 @@ public class Projectile : MonoBehaviour
             Debug.Log($"투사체 명중! 데미지: {damage}");
 
             // 실제 적 체력 깎기 (나중에 구현되면 주석 해제)
-            // collision.GetComponent<Health>()?.TakeDamage(damage);
-
+            collision.GetComponent<Health>()?.TakeDamage(damage);
             // 투사체 삭제 (맞았으니 사라짐)
             Destroy(gameObject);
         }
