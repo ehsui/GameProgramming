@@ -109,10 +109,11 @@ public class Enemy2 : MonoBehaviour
     
     void Patrol()
     {
-        if (patrolPoints.Length == 0)
+        // 순찰 지점이 아예 없거나(null), 비어있다면(Length == 0)
+        if (patrolPoints == null || patrolPoints.Length == 0)
         {
-            SetAnimationState(false); 
-            return;
+            SetAnimationState(false); // 걷는 모션 끄기 (Idle)
+            return; // 아래의 이동 코드를 실행하지 않고 함수 종료 -> 제자리 멈춤
         }
 
         Transform targetPoint = patrolPoints[currentPatrolIndex];

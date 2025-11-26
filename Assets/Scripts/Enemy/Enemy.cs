@@ -1,38 +1,36 @@
 using UnityEngine;
+using System.Collections; // 코루틴
 
 public class Enemy : MonoBehaviour
 {
     [Header("Status")]
     public float moveSpeed = 3f;
-    public float chaseRange = 10f;  // 플레이어 감지 범위
-    public float stopDistance = 3f; // 플레이어 바로 앞에서 멈추는 거리
+    public float chaseRange = 10f;
+    public float stopDistance = 3f;
 
     [Header("Attack Settings")]
-    public float attackRate = 2f; //  예: 2초당 1회 공격
-    
+    public float attackRate = 2f;
+    public int damage = 10;
+    public float damageDelay = 0.5f; // 공격 동작 시작 후 실제 타격까지 걸리는 시간 (애니메이션에 맞춰 조절)
+
     [Header("References")]
     public Transform player;
-    public Transform[] patrolPoints; // 순찰할 지점들
-    public Animator anim;           // Animator 컴포넌트 참조
+    public Transform[] patrolPoints;
+    public Animator anim;
 
     private int currentPatrolIndex = 0;
     private bool isChasing = false;
-    private float nextAttackTime = 0f; // 다음 공격 가능 시간
+    private float nextAttackTime = 0f;
 
     private void Start()
     {
-        // 플레이어가 할당되지 않았다면 태그로 찾기
         if (player == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null) player = playerObj.transform;
         }
 
-        // Animator 컴포넌트 가져오기
-        if (anim == null)
-        {
-            anim = GetComponent<Animator>();
-        }
+        if (anim == null) anim = GetComponent<Animator>();
     }
 
     private void Update()
@@ -41,70 +39,83 @@ public class Enemy : MonoBehaviour
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // 1. 상태 결정 (추격 vs 순찰)
         if (distanceToPlayer < chaseRange)
-        {
             isChasing = true;
-        }
         else
-        {
             isChasing = false;
-        }
 
-        // 2. 행동 실행
         if (isChasing)
-        {
             ChasePlayer(distanceToPlayer);
-        }
         else
-        {
             Patrol();
-        }
     }
 
     void ChasePlayer(float distance)
     {
-        // 공격 범위 밖이라면 이동
         if (distance > stopDistance)
         {
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
             LookAtTarget(player.position);
-            SetAnimationState(true);    // 걷기 애니메이션 실행
+            SetAnimationState(true);
         }
         else
         {
-            // 멈춰서 플레이어를 바라봄 (공격 실행)
             LookAtTarget(player.position);
-            // 걷기 애니메이션을 끄고 공격 로직 실행
-            SetAnimationState(false); 
-            AttackPlayer(); // 공격 메서드 호출
+            SetAnimationState(false);
+            AttackPlayer();
         }
     }
 
-    // 공격 로직 및 애니메이션
+    // 공격 로직 (코루틴 시작)
     void AttackPlayer()
     {
-        // 공격 주기가 되었는지 확인
         if (Time.time >= nextAttackTime)
         {
-            // 애니메이터에 Attack 트리거를 실행
-            if (anim != null)
-            {
-                anim.SetTrigger("Attack"); // Animator에 "Attack" Trigger 필요
-            }
-            
-            // 실제 데미지 로직은 여기에 구현  위치
+            // 1. 애니메이션 먼저 실행 (칼 휘두르기 시작)
+            if (anim != null) anim.SetTrigger("Attack");
 
-            // 다음 공격 시간 설정
+            // 2. 실제 타격 판정은 잠시 후에 (코루틴 호출)
+            StartCoroutine(ApplyDamageWithDelay());
+
+            // 3. 쿨타임 적용
             nextAttackTime = Time.time + attackRate;
         }
     }
-    
+
+    // 딜레이 후 데미지 주는 코루틴
+    IEnumerator ApplyDamageWithDelay()
+    {
+        // 설정한 시간만큼 대기
+        yield return new WaitForSeconds(damageDelay);
+
+        // 대기가 끝난 시점에 플레이어가 여전히 있는지 확인!
+        if (player != null)
+        {
+            // 플레이어와의 거리를 다시 계산
+            float currentDistance = Vector2.Distance(transform.position, player.position);
+
+            // 공격 범위(stopDistance) + 약간의 여유분(0.5f) 안에 있어야 맞음
+            if (currentDistance <= stopDistance + 0.5f)
+            {
+                PlayerStats pStats = player.GetComponent<PlayerStats>();
+                if (pStats != null)
+                {
+                    pStats.TakeDamage(damage);
+                    Debug.Log("Attack!");
+                }
+            }
+            else
+            {
+                Debug.Log("Attadck failed: Player out of range.");
+            }
+        }
+    }
+
     void Patrol()
     {
-        if (patrolPoints.Length == 0)
+        if (patrolPoints == null || patrolPoints.Length == 0)
         {
-            SetAnimationState(false); 
+            SetAnimationState(false);
             return;
         }
 
@@ -114,44 +125,32 @@ public class Enemy : MonoBehaviour
         LookAtTarget(targetPoint.position);
         SetAnimationState(true); 
 
-        // 순찰 지점에 거의 도착했으면 다음 지점으로 즉시 변경
         if (Vector2.Distance(transform.position, targetPoint.position) < 0.2f)
         {
             currentPatrolIndex++;
             if (currentPatrolIndex >= patrolPoints.Length)
-            {
-                currentPatrolIndex = 0; // 다시 첫 지점으로 순환
-            }
+                currentPatrolIndex = 0;
         }
     }
     
-    // 애니메이션 상태를 설정하는 메서드 (IsWalking)
     void SetAnimationState(bool isWalking)
     {
-        if (anim != null)
-        {
-            // 공격 애니메이션이 재생 중일 때는 걷기/대기 상태를 변경하지 않도록 
-            // 더 복잡한 상태 관리가 필요할 수 있으나, 여기서는 단순화하여 구현합니다.
-            anim.SetBool("IsWalking", isWalking);
-        }
+        if (anim != null) anim.SetBool("IsWalking", isWalking);
     }
 
-    // 적이 이동하는 방향을 바라보게 함
     void LookAtTarget(Vector3 target)
     {
         if (target.x > transform.position.x)
-            transform.localScale = new Vector3(-6, 6, 6); // 오른쪽 보기
+            transform.localScale = new Vector3(-6, 6, 6); 
         else if (target.x < transform.position.x)
-            transform.localScale = new Vector3(6, 6, 6); // 왼쪽 보기
+            transform.localScale = new Vector3(6, 6, 6); 
     }
 
-    // 에디터에서 감지 범위를 시각적으로 보여줌
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
         
-        // 공격 범위 시각화
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
