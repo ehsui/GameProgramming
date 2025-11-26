@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
+  m_Name: MaxBodhicittaUpgrade_01
+  m_EditorClassIdentifier: 
+  description: "\uCD5C\uB300 \uBCF4\uB9AC\uC2EC 5% \uC99D\uAC00"
+  attackPowerPercent: 5
+  defensePowerPercent: 0
+  attackSpeedPercent: 0
+  projectileRangePercent: 0
+  explosionRangePercent: 0
+  cost: 5
+  preNode: {fileID: 0}
