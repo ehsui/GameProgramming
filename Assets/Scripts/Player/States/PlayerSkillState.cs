@@ -24,15 +24,13 @@ public class PlayerSkillState : PlayerBaseState
         // 3. 애니메이션 트리거
         player.animator?.SetTrigger("skill");
 
-        // ✨ [수정 1] 버프(Buff) 류 스킬은 시전 즉시 상태 탈출! (이동 가능하게)
-        if (currentSkill.skillType == SkillType.Buff)
+        if (currentSkill.skillType == SkillType.Buff || currentSkill.skillType == SkillType.Stealth)
         {
-            // 바로 Idle(혹은 이동 중이었다면 Move) 상태로 복귀
             if (player.CurrentMovementInput.x != 0)
                 stateMachine.ChangeState(player.MoveState);
             else
                 stateMachine.ChangeState(player.IdleState);
-            return; // 여기서 Enter 종료
+            return;
         }
 
         timer = 0f;

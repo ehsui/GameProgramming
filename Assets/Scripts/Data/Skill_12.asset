@@ -18,8 +18,8 @@ MonoBehaviour:
   bodhicittaCost: 25
   cooldown: 0
   damageMultiplier: 0
-  duration: 1
+  duration: 2
   count: 1
   range: 5
   pushForce: 0
-  skillPrefab: {fileID: 0}
+  skillPrefab: {fileID: 7335725785896832370, guid: 0ef181c6eb24d5d4693ee46d25e54d79, type: 3}

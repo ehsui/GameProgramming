@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421b7eaaff662f144b9d02d89360db79, type: 3}
   m_Name: Skill_13
   m_EditorClassIdentifier: 
-  skillType: 2
+  skillType: 7
   skillName: 1_3
   description: 
   bodhicittaCost: 25
@@ -22,4 +22,5 @@ MonoBehaviour:
   count: 1
   range: 5
   pushForce: 0
-  skillPrefab: {fileID: 0}
+  skillPrefab: {fileID: 2086094772378614979, guid: b3f3be196d701804081678fd00476c8f, type: 3}
+  loopEffectPrefab: {fileID: 103086430629076620, guid: b5a0f97812d9c524cb3c49899c26c2d3, type: 3}

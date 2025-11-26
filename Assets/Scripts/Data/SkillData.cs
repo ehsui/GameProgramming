@@ -8,7 +8,9 @@ public enum SkillType
     Buff,           // 버프 (무적, 은신 등) (예: 1-2, 1-3)
     AreaAttack,     // 범위 공격 (예: 2-2, 3-2)
     Dash,           // 돌진 (예: 2-3)
-    Combo           // 연타 (예: 3-3)
+    Combo,           // 연타 (예: 3-3)
+    Laser,
+    Stealth
 }
 
 [CreateAssetMenu(fileName = "New Skill Data", menuName = "Data/Skill Data")]
@@ -34,4 +36,5 @@ public class SkillData : ScriptableObject
 
     [Header("리소스 (나중에 연결)")]
     public GameObject skillPrefab;     // 투사체나 이펙트 프리팹
+    public GameObject loopEffectPrefab; // 지속 이펙트 프리팹
 }
