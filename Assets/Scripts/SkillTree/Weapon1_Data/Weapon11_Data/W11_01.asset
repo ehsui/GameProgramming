@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
-  m_Name: Weapon1_AttackUpgrade_01
+  m_Name: W11_01
   m_EditorClassIdentifier: 
-  description: "\uAE08\uAC15\uB839 \uACF5\uACA9\uB825 5% \uC99D\uAC00_01"
-  branch: 0
+  description: "\uAE08\uAC15\uB839+\uAE08\uAC15\uB839 \uACF5\uACA9\uB825 5% \uC99D\uAC00_01"
+  branchType: 3
   orderInBranch: 1
+  preNode: {fileID: 11400000, guid: fa7a4e8bddc61fa4fb4a5e7b8f26afaf, type: 2}
   attackPercent: 0.05
-  preNode: {fileID: 0}
-  targetWeapon: {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
+  targetWeapon: {fileID: 0}
+  targetSkill: {fileID: 11400000, guid: 444095e7db367124a83b6ef51610648f, type: 2}

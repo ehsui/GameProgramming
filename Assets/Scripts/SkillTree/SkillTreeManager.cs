@@ -12,7 +12,6 @@ public class SkillTreeManager : MonoBehaviour
 
     public GameObject linePrefab;   // 노드 연결할 라인 프리팹 변수
     public Transform lineParent;    // 라인들 담을 오브젝트
-    public RectTransform centerAnchor;  // 센터 노드 위치
 
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
 
@@ -70,39 +69,29 @@ public class SkillTreeManager : MonoBehaviour
     // 노드 간 연결하는 가지 생성
     public void CreateConnection(NodeData child)
     {
+        if (child.preNode == null) return;
+
         Node childNode = FindNodeInstance(child);
-        if (childNode == null) return;
+        Node parentNode = FindNodeInstance(child.preNode);
+
+        if (childNode == null || parentNode == null) return;
 
         RectTransform childRect = childNode.GetComponent<RectTransform>();
-        RectTransform parentRect = null;
+        RectTransform parentRect = parentNode.GetComponent<RectTransform>();
 
-        // 중앙 노드와 연결하는 경우 (preNode == null)
-        if (child.preNode == null)
-        {
-            parentRect = centerAnchor;   // 중앙 노드 위치 사용
-        }
-        else
-        {
-            Node parentNode = FindNodeInstance(child.preNode);
-            if (parentNode == null) return;
-
-            parentRect = parentNode.GetComponent<RectTransform>();
-        }
-
+        // 가지 오브젝트 생성
         GameObject lineObj = Instantiate(linePrefab, lineParent);
         RectTransform lineRect = lineObj.GetComponent<RectTransform>();
 
+        // 시작점 - 끝점
         Vector3 startPos = parentRect.position;
         Vector3 endPos = childRect.position;
-
         Vector3 dir = endPos - startPos;
         float distance = dir.magnitude;
 
         lineRect.position = startPos;
-        lineRect.sizeDelta = new Vector2(distance, 4f);
+        lineRect.sizeDelta = new Vector2(distance, lineRect.sizeDelta.y);
         lineRect.rotation = Quaternion.FromToRotation(Vector3.right, dir);
-
-        lineObj.GetComponent<Image>().color = Color.green;
     }
 
     // 노드 연결하는 가지 그리기

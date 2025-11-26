@@ -70,7 +70,7 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         {
             isPurchased = true;     // 구매된 노드로 변경
             nodeImage.color = hoverColor;    // 노드 밝은 색으로 변경
-
+            Debug.Log("clicked");
         }
     }
 }
