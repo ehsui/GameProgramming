@@ -73,4 +73,10 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             Debug.Log("clicked");
         }
     }
+
+    public void OnPointerDown(PointerEventData data)
+    {
+        Debug.Log("DOWN on node");
+    }
+
 }

@@ -18,14 +18,8 @@ public class SkillTreeManager : MonoBehaviour
     public void Awake()
     {
         // 싱글톤
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     // 구매 가능한 노드인지 레벨 체크
@@ -50,10 +44,8 @@ public class SkillTreeManager : MonoBehaviour
 
         // 노드 구매 처리
         saveData.purchasedNodes.Add(data);
-
         // 연결해주기
         CreateConnection(data);
-
         // 노드 클릭하면 스탯 증가
         ApplyNodeEffect(data);
 
