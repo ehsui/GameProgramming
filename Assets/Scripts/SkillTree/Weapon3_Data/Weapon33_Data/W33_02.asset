@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
+  m_Name: W33_02
+  m_EditorClassIdentifier: 
+  description: "\uAE08\uAC15\uC800+\uAE08\uAC15\uC800 \uACF5\uACA9\uB825 5% \uC99D\uAC00_02"
+  branchType: 11
+  orderInBranch: 2
+  preNode: {fileID: 11400000, guid: e6f0587778c353b4c97ca4dac068bc82, type: 2}
+  attackPercent: 0.05
+  targetWeapon: {fileID: 0}
+  targetSkill: {fileID: 11400000, guid: dcfb0873a7a6b7e4db12d9ed09068d31, type: 2}

@@ -138,7 +138,7 @@ RectTransform:
   m_GameObject: {fileID: 4573407323900404267}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4573407322938071621}
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: e69738ef3d733694f95519d5360b45a7, type: 2}
   nodeImage: {fileID: 4573407322938071610}
-  activeNodeSprite: {fileID: 21300000, guid: c2e948543243f974bb33642c24f65378, type: 3}
-  notActiveNodeSprite: {fileID: 21300000, guid: 9918c1bc16c7ed64b9103e42663f4110, type: 3}
+  normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  hoverColor: {r: 1, g: 1, b: 1, a: 1}
   isPurchased: 0
   tooltipAnchor: {fileID: 4573407323417330297}

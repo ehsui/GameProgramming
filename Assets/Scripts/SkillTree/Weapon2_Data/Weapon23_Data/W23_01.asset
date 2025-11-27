@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
-  m_Name: AttackPowerUpgrade_01
+  m_Name: W23_01
   m_EditorClassIdentifier: 
-  description: "\uACF5\uACA9\uB825 5% \uC99D\uAC00"
-  attackPowerPercent: 5
-  defensePowerPercent: 0
-  attackSpeedPercent: 0
-  projectileRangePercent: 0
-  explosionRangePercent: 0
-  cost: 5
-  preNode: {fileID: 0}
+  description: "\uC11D\uC7A5+\uAE08\uAC15\uC800 \uACF5\uACA9\uB825 5% \uC99D\uAC00_01"
+  branchType: 8
+  orderInBranch: 1
+  preNode: {fileID: 11400000, guid: 471f111af92b9ef4cacf59ec103dd02b, type: 2}
+  attackPercent: 0.05
+  targetWeapon: {fileID: 0}
+  targetSkill: {fileID: 11400000, guid: 2f037f43888273f4f9c7442d9cc13f24, type: 2}
