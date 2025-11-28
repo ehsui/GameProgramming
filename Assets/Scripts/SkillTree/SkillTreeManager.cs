@@ -7,11 +7,15 @@ public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager Instance;    // 싱글톤 인스턴스
 
+    [Header("Data")]
     public SkillTreeSaveData saveData;
     public PlayerLevelSaveData levelData;
 
+    [Header("Line")]
     public GameObject linePrefab;   // 노드 연결할 라인 프리팹 변수
     public Transform lineParent;    // 라인들 담을 오브젝트
+    public Color lockedLineColor = new Color(0.3f, 0.3f, 0.3f, 1f);
+    public Color unlockedLineColor = Color.white;
 
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
 
@@ -20,10 +24,28 @@ public class SkillTreeManager : MonoBehaviour
         // 싱글톤
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        // [테스트용] 게임 시작할 때마다 구매 목록 싹 비우기
+        // 테스트 끝나면 이 줄은 꼭 지우거나 주석 처리!!!!!!!!!!
+        if (saveData != null)
+        {
+            saveData.purchasedNodes.Clear();
+            Debug.Log("테스트를 위해 구매 목록을 초기화했습니다.");
+        }
+    }
+
+    // 저장된 데이터 불러와서 화면에 다시 그리기
+    public void Start()
+    {
+        // 1. 라인 어두운 색으로 생성
+        GenerateAllLines();
+
+        // 2. 저장된 노드 데이터 불러와서 구매한 노드 색 변경
+        RefreshUI();
     }
 
     // 구매 가능한 노드인지 레벨 체크
-    bool IsLevelAllowed(NodeData data)
+    public bool IsLevelAllowed(NodeData data)
     {
         // 1레벨마다 노드 2개씩 구매 가능
         int maxOrder = levelData.level * 2;
@@ -33,19 +55,34 @@ public class SkillTreeManager : MonoBehaviour
     // 구매 가능한 노드인지 확인(마우스 클릭했을 때)
     public bool TryPurchase(NodeData data)
     {
-        // 구매 불가능한 경우
+        Debug.Log($"클릭 시도: {data.name}, 현재 레벨: {levelData.level}, 필요 순서: {data.orderInBranch}");
 
         // 0. 레벨 제한
-        if (!IsLevelAllowed(data)) return false;
+        if (!IsLevelAllowed(data))
+        {
+            Debug.Log(">> 구매 실패: 레벨이 부족합니다.");
+            return false;
+        }
         // 1. 이미 구매한 노드일 때
-        if (saveData.purchasedNodes.Contains(data)) return false;
+        if (saveData.purchasedNodes.Contains(data))
+        {
+            Debug.Log(">> 구매 실패: 이미 구매한 노드입니다.");
+            return false;
+        }
         // 2. 선행 노드가 구매 안됐음
-        if (data.preNode != null && !saveData.purchasedNodes.Contains(data.preNode)) return false;
+        if (data.preNode != null && !saveData.purchasedNodes.Contains(data.preNode))
+        {
+            Debug.Log(">> 구매 실패: 선행 노드를 먼저 찍어야 합니다.");
+            return false;
+        }
 
         // 노드 구매 처리
         saveData.purchasedNodes.Add(data);
-        // 연결해주기
-        CreateConnection(data);
+        Debug.Log(">> 구매 성공!");
+
+        // 색상 변경
+        RefreshUI();
+
         // 노드 클릭하면 스탯 증가
         ApplyNodeEffect(data);
 
@@ -58,35 +95,99 @@ public class SkillTreeManager : MonoBehaviour
         return saveData.purchasedNodes.Contains(data);
     }
 
-    // 노드 간 연결하는 가지 생성
-    public void CreateConnection(NodeData child)
+    // 노드 연결하는 라인 생성
+    void GenerateAllLines()
     {
-        if (child.preNode == null) return;
+        // nodeLookup에 등록된 모든 노드를 하나씩 꺼내기
+        foreach (KeyValuePair<NodeData, Node> entry in nodeLookup)
+        {
+            NodeData data = entry.Key;
+            Node currentNode = entry.Value;
 
-        Node childNode = FindNodeInstance(child);
-        Node parentNode = FindNodeInstance(child.preNode);
+            // 선행 노드가 없으면(루트 노드면) 선 생성X
+            if (data.preNode == null) continue;
 
-        if (childNode == null || parentNode == null) return;
-
-        RectTransform childRect = childNode.GetComponent<RectTransform>();
-        RectTransform parentRect = parentNode.GetComponent<RectTransform>();
-
-        // 가지 오브젝트 생성
-        GameObject lineObj = Instantiate(linePrefab, lineParent);
-        RectTransform lineRect = lineObj.GetComponent<RectTransform>();
-
-        // 시작점 - 끝점
-        Vector3 startPos = parentRect.position;
-        Vector3 endPos = childRect.position;
-        Vector3 dir = endPos - startPos;
-        float distance = dir.magnitude;
-
-        lineRect.position = startPos;
-        lineRect.sizeDelta = new Vector2(distance, lineRect.sizeDelta.y);
-        lineRect.rotation = Quaternion.FromToRotation(Vector3.right, dir);
+            // 선 생성 함수 호출
+            CreateLineObject(currentNode, data);
+        }
     }
 
-    // 노드 연결하는 가지 그리기
+    // UI 새로고침 (색깔 업데이트)
+    public void RefreshUI()
+    {
+        // 모든 노드를 하나씩 검사
+        foreach (KeyValuePair<NodeData, Node> entry in nodeLookup)
+        {
+            NodeData data = entry.Key;
+            Node node = entry.Value;
+
+            // 1. 노드 색상 처리 (구매됐으면 밝게, 아니면 어둡게)
+            if (IsPurchased(data))
+            {
+                node.isPurchased = true;
+                node.nodeImage.color = node.hoverColor;
+            }
+            else
+            {
+                node.isPurchased = false;
+                node.nodeImage.color = node.normalColor;
+            }
+
+            // 2. 라인 색상 처리
+            // connectedLine : 부모 노드 -> 현재 노드 연결하는 라인
+            if (node.connectedLine != null && data.preNode != null)
+            {
+                if (IsPurchased(data.preNode))
+                {
+                    // 부모 노드가 구매되면 connectedLine 밝게 변경
+                    node.connectedLine.color = unlockedLineColor;
+                }
+                else
+                {
+                    node.connectedLine.color = lockedLineColor;
+                }
+            }
+        }
+    }
+
+    // 라인 오브젝트 실제로 화면에 생성
+    void CreateLineObject(Node childNode, NodeData data)
+    {
+        Node parentNode = FindNodeInstance(data.preNode);
+        if (parentNode == null) return;
+
+        // 라인 오브젝트 생성
+        GameObject lineObj = Instantiate(linePrefab, lineParent);
+        RectTransform lineRect = lineObj.GetComponent<RectTransform>();
+        Image lineImage = lineObj.GetComponent<Image>();
+
+        // 위치, 회전
+        Vector2 startPosLocal = lineParent.InverseTransformPoint(parentNode.GetComponent<RectTransform>().position);
+        Vector2 endPosLocal = lineParent.InverseTransformPoint(childNode.GetComponent<RectTransform>().position);
+
+        lineRect.pivot = new Vector2(0.5f, 0f);
+        lineRect.anchorMin = new Vector2(0.5f, 0.5f);
+        lineRect.anchorMax = new Vector2(0.5f, 0.5f);
+        lineRect.anchoredPosition = startPosLocal;
+
+        Vector2 dir = endPosLocal - startPosLocal;
+        float distance = dir.magnitude;
+
+        // 길이와 회전
+        lineRect.sizeDelta = new Vector2(lineRect.sizeDelta.x, distance);
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+        lineRect.localRotation = Quaternion.Euler(0, 0, angle);
+
+        lineRect.SetAsLastSibling(); // 맨 앞에 그리기
+        if (lineImage != null) lineImage.raycastTarget = false; // 레이캐스트 끄기
+
+        // 처음엔 어두운 색
+        lineImage.color = lockedLineColor;
+
+        // 자식 노드에 생성된 라인 이미지 저장
+        childNode.connectedLine = lineImage;
+    }
+
     // 노드 데이터 등록
     public void RegisterNode(NodeData data, Node node)
     {

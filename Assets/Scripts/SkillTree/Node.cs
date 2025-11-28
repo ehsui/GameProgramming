@@ -4,19 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     public NodeData data;
-
-    // 노드 이미지
     public Image nodeImage;
+    public Image connectedLine; // 현재 노드와 다음 노드 연결하는 line이미지
     public Color normalColor = new Color(0.5f, 0.5f, 0.5f);
     public Color hoverColor = Color.white;
 
     private bool isPointerInside = false;   // 마우스가 노드 범위 안에 올려져 있는지
     public bool isPurchased = false;
-
     public RectTransform tooltipAnchor;
+
+    private bool isPressed = false;
 
     public void Start()
     {
@@ -31,7 +31,12 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         isPointerInside = true;
 
         // 선행 노드가 없거나 선행 노드가 구매된 경우 Hover 가능
-        bool canHover = (data.preNode == null) || SkillTreeManager.Instance.IsPurchased(data.preNode);
+        bool isParentUnlocked = (data.preNode == null) || SkillTreeManager.Instance.IsPurchased(data.preNode);
+        
+        // 레벨이 충분하지 않은 경우
+        bool isLevelEnough = SkillTreeManager.Instance.IsLevelAllowed(data);
+
+        bool canHover = isParentUnlocked && isLevelEnough;
 
         if (canHover)
         {
@@ -63,20 +68,25 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         }
     }
 
-    // 노드 클릭했을 때
-    public void OnPointerClick(PointerEventData eventData)
+    // 마우스 눌렀을 때 위치 저장
+    public void OnPointerDown(PointerEventData eventData)
     {
-        if (SkillTreeManager.Instance.TryPurchase(data))
+        isPressed = true;
+    }
+
+    // 마우스를 뗐을 때 노드 구매
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (isPressed)
         {
-            isPurchased = true;     // 구매된 노드로 변경
-            nodeImage.color = hoverColor;    // 노드 밝은 색으로 변경
-            Debug.Log("clicked");
+            // 노드 구매
+            if (SkillTreeManager.Instance.TryPurchase(data))
+            {
+                isPurchased = true;
+                nodeImage.color = hoverColor;
+                Debug.Log("구매 성공!");
+            }
         }
+        isPressed = false;
     }
-
-    public void OnPointerDown(PointerEventData data)
-    {
-        Debug.Log("DOWN on node");
-    }
-
 }

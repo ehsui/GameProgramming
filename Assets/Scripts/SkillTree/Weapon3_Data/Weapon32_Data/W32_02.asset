@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   description: "\uAE08\uAC15\uC800+\uC11D\uC7A5 \uACF5\uACA9\uB825 5% \uC99D\uAC00_02"
   branchType: 10
-  orderInBranch: 2
+  orderInBranch: 4
   preNode: {fileID: 11400000, guid: 18e6d460105401242bdc5fee45ac9b85, type: 2}
   attackPercent: 0.05
   targetWeapon: {fileID: 0}
