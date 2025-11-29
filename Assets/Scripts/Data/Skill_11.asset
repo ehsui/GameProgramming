@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421b7eaaff662f144b9d02d89360db79, type: 3}
   m_Name: Skill_11
   m_EditorClassIdentifier: 
-  skillName: 
+  skillType: 6
+  skillName: 1_1
   description: 
-  bodhicittaCost: 0
+  bodhicittaCost: 25
   cooldown: 0
-  damageMultiplier: 0
+  damageMultiplier: 2.5
   duration: 0
-  hitCount: 0
-  skillPrefab: {fileID: 0}
-  hitEffectPrefab: {fileID: 0}
+  count: 1
+  range: 15
+  pushForce: 0
+  skillPrefab: {fileID: 7747376901897420373, guid: 57225ddc96a180c4a89fd3840634f56e, type: 3}

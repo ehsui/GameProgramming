@@ -60,7 +60,7 @@ public class PlayerAttack : MonoBehaviour
         foreach (var enemy in enemies)
         {
             Debug.Log($"[금강령] {enemy.name} 적중! 데미지: {weapon.damage}");
-            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
         }
 
         // 디버그 시각화
@@ -87,17 +87,73 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // 3번 무기용 (근접) - 기존 유지
+    // 3번 무기 (금강저) - Box 형태 + 이펙트 포함
     private void DoMeleeAttack(WeaponData weapon)
     {
         Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
-        Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(center, weapon.attackRange * 0.5f, LayerMask.GetMask("Enemy"));
+
+        // 1. 히트박스 중심점 (SpawnOffset 사용)
+        Vector2 center = (Vector2)transform.position + (direction * weapon.spawnOffset);
+
+        // ▼▼▼ [사라졌던 이펙트 로직 복구!] ▼▼▼
+        if (weapon.meleeSlashPrefab != null)
+        {
+            // 이펙트는 플레이어 몸에서 조금만 앞에서 나오게 (히트박스 중심보다 약간 뒤쪽이 자연스러움)
+            // 필요하면 0.5f 대신 weapon.spawnOffset을 써도 됩니다.
+            Vector2 effectPos = (Vector2)transform.position + (direction * 0.5f);
+
+            GameObject slash = Instantiate(weapon.meleeSlashPrefab, effectPos, Quaternion.identity);
+
+            // 방향 반전 (왼쪽 볼 때 뒤집기)
+            if (!controller.IsFacingRight)
+            {
+                Vector3 scale = slash.transform.localScale;
+                scale.x = -Mathf.Abs(scale.x);
+                slash.transform.localScale = scale;
+            }
+
+            // (만약 AutoDestroy 스크립트가 없다면 안전하게 삭제)
+            Destroy(slash, 0.5f);
+        }
+        // ▲▲▲ ---------------------------- ▲▲▲
+
+        // 2. 네모난 히트박스 설정
+        // 가로: 사거리(attackRange), 세로: 1.5f
+        Vector2 boxSize = new Vector2(weapon.attackRange, 1.5f);
+
+        // 3. 판정 (OverlapBoxAll)
+        Collider2D[] enemies = Physics2D.OverlapBoxAll(center, boxSize, 0, LayerMask.GetMask("Enemy"));
 
         foreach (var enemy in enemies)
         {
-            Debug.Log($"[금강저] {enemy.name} 베기! 데미지: {weapon.damage}");
-            // enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            Debug.Log($"[금강저/Box] {enemy.name} 베기! 데미지: {weapon.damage}");
+        }
+    }
+    // 에디터에서 공격 범위를 눈으로 확인하는 기능
+    private void OnDrawGizmosSelected()
+    {
+        if (controller == null) controller = GetComponent<PlayerController>();
+
+        // 현재 들고 있는 무기 가져오기
+        WeaponData weapon = controller.CurrentMainWeapon;
+        if (weapon == null) return;
+
+        Vector2 direction = controller.IsFacingRight ? Vector2.right : Vector2.left;
+        Gizmos.color = Color.red;
+
+        // 1번 금강령 (원형)
+        if (weapon.weaponId == 1)
+        {
+            Vector2 spawnPos = (Vector2)transform.position + (direction * weapon.spawnOffset);
+            Gizmos.DrawWireSphere(spawnPos, weapon.attackRange * 0.5f);
+        }
+        // 3번 금강저 (지금은 원형이지만 곧 네모로 바꿀 예정)
+        else if (weapon.weaponId == 3)
+        {
+            Vector2 center = (Vector2)transform.position + (direction * weapon.attackRange * 0.5f);
+            Vector2 boxSize = new Vector2(weapon.attackRange, 1.5f);
+            Gizmos.DrawWireCube(center, boxSize); // 네모 그리기
         }
     }
 }
