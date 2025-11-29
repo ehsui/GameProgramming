@@ -129,7 +129,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 2
 --- !u!61 &1274135401162674408
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -172,6 +172,8 @@ MonoBehaviour:
   chaseRange: 8
   stopDistance: 3
   attackRate: 2
+  damage: 10
+  damageDelay: 0.5
   player: {fileID: 0}
   patrolPoints:
   - {fileID: 0}
