@@ -17,5 +17,5 @@ MonoBehaviour:
   orderInBranch: 4
   preNode: {fileID: 11400000, guid: d90590eea93eddd4a8f4e9be187df480, type: 2}
   attackPercent: 0.05
-  targetWeapon: {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
-  targetSkill: {fileID: 0}
+  targetWeapons:
+  - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
