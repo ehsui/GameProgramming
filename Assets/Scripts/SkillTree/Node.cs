@@ -84,7 +84,6 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             {
                 isPurchased = true;
                 nodeImage.color = hoverColor;
-                Debug.Log("구매 성공!");
             }
         }
         isPressed = false;

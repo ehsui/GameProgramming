@@ -13,9 +13,16 @@ public class SkillTreeManager : MonoBehaviour
 
     [Header("Line")]
     public GameObject linePrefab;   // 노드 연결할 라인 프리팹 변수
-    public Transform lineParent;    // 라인들 담을 오브젝트
     public Color lockedLineColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     public Color unlockedLineColor = Color.white;
+
+    [Header("무기별 LineParent")]
+    public Transform lineParentW1;
+    public Transform lineParentW2;
+    public Transform lineParentW3;
+
+    [Header("SkillTree Tab Controller")]
+    public SkillTreeTabController tabController;
 
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
 
@@ -37,8 +44,24 @@ public class SkillTreeManager : MonoBehaviour
     // 저장된 데이터 불러와서 화면에 다시 그리기
     public void Start()
     {
-        // 1. 라인 어두운 색으로 생성
+        // 라인 생성 전에 모든 탭 뷰를 활성화해서 UI 계산이 제대로 되게 함
+        if (tabController != null)
+        {
+            tabController.ActivateAllViewsTemporarily();
+        }
+        else
+        {
+            Debug.LogError("Tab Controller가 연결되지 않았습니다.");
+        }
+
+        // 라인 생성
         GenerateAllLines();
+
+        // 라인 생성이 끝났으니 탭 상태를 초기화 (1번만 켜고 나머지 끔)
+        if (tabController != null)
+        {
+            tabController.InitializeTabs();
+        }
 
         // 2. 저장된 노드 데이터 불러와서 구매한 노드 색 변경
         RefreshUI();
@@ -55,30 +78,29 @@ public class SkillTreeManager : MonoBehaviour
     // 구매 가능한 노드인지 확인(마우스 클릭했을 때)
     public bool TryPurchase(NodeData data)
     {
-        Debug.Log($"클릭 시도: {data.name}, 현재 레벨: {levelData.level}, 필요 순서: {data.orderInBranch}");
-
-        // 0. 레벨 제한
-        if (!IsLevelAllowed(data))
-        {
-            Debug.Log(">> 구매 실패: 레벨이 부족합니다.");
-            return false;
-        }
-        // 1. 이미 구매한 노드일 때
-        if (saveData.purchasedNodes.Contains(data))
-        {
-            Debug.Log(">> 구매 실패: 이미 구매한 노드입니다.");
-            return false;
-        }
-        // 2. 선행 노드가 구매 안됐음
+        // 0. 선행 노드가 구매 안됐음
         if (data.preNode != null && !saveData.purchasedNodes.Contains(data.preNode))
         {
-            Debug.Log(">> 구매 실패: 선행 노드를 먼저 찍어야 합니다.");
+            Debug.Log($"현재 레벨: {levelData.level}\n>> 노드 구매 실패: 선행 노드를 먼저 구매해야 합니다.");
             return false;
         }
+        // 1. 레벨 제한
+        if (!IsLevelAllowed(data))
+        {
+            Debug.Log($"현재 레벨: {levelData.level}\n>> 노드 구매 실패: 레벨이 부족합니다.");
+            return false;
+        }
+        // 2. 이미 구매한 노드일 때
+        if (saveData.purchasedNodes.Contains(data))
+        {
+            Debug.Log($"현재 레벨: {levelData.level}\n>> 이미 구매한 노드입니다.");
+            return false;
+        }
+        
 
         // 노드 구매 처리
         saveData.purchasedNodes.Add(data);
-        Debug.Log(">> 구매 성공!");
+        Debug.Log($">> {data.name} 구매 성공!");
 
         // 색상 변경
         RefreshUI();
@@ -156,14 +178,44 @@ public class SkillTreeManager : MonoBehaviour
         Node parentNode = FindNodeInstance(data.preNode);
         if (parentNode == null) return;
 
+        // 부모 LineParent 찾기
+        Transform targetLineParent = null;
+
+        Debug.Log($"[라인 생성 시도] 노드명: {data.name}, 감지된 BranchType: {data.branchType}, 부모 노드: {parentNode.name}");
+
+        switch (data.branchType) // NodeData의 BranchType
+        {
+            case BranchType.Weapon1:
+            case BranchType.Weapon11:
+            case BranchType.Weapon12:
+            case BranchType.Weapon13:
+                targetLineParent = lineParentW1;
+                break;
+            case BranchType.Weapon2:
+            case BranchType.Weapon21:
+            case BranchType.Weapon22:
+            case BranchType.Weapon23:
+                targetLineParent = lineParentW2;
+                break;
+            case BranchType.Weapon3:
+            case BranchType.Weapon31:
+            case BranchType.Weapon32:
+            case BranchType.Weapon33:
+                targetLineParent = lineParentW3;
+                break;
+            default:
+                Debug.LogError($"[SkillTreeManager] 알 수 없는 BranchType입니다: {data.branchType}, 노드 이름: {data.name}");
+                return; // 부모를 못 찾으면 라인 생성 중단
+        }
+
         // 라인 오브젝트 생성
-        GameObject lineObj = Instantiate(linePrefab, lineParent);
+        GameObject lineObj = Instantiate(linePrefab, targetLineParent);
         RectTransform lineRect = lineObj.GetComponent<RectTransform>();
         Image lineImage = lineObj.GetComponent<Image>();
 
         // 위치, 회전
-        Vector2 startPosLocal = lineParent.InverseTransformPoint(parentNode.GetComponent<RectTransform>().position);
-        Vector2 endPosLocal = lineParent.InverseTransformPoint(childNode.GetComponent<RectTransform>().position);
+        Vector2 startPosLocal = targetLineParent.InverseTransformPoint(parentNode.GetComponent<RectTransform>().position);
+        Vector2 endPosLocal = targetLineParent.InverseTransformPoint(childNode.GetComponent<RectTransform>().position);
 
         lineRect.pivot = new Vector2(0.5f, 0f);
         lineRect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -206,10 +258,36 @@ public class SkillTreeManager : MonoBehaviour
     // 노드 구매하면 스탯 증가
     void ApplyNodeEffect(NodeData data)
     {
-        if (data.targetWeapon != null && data.attackPercent != 0f)
+        // 1. 공격력 증가 효과가 있는지 확인
+        if (data.attackPercent <= 0f)
         {
-            // Weapon 데이터의 damage 증가
-            data.targetWeapon.damage *= (1f + (data.attackPercent/100f));
+            Debug.Log($">> {data.name}: 공격력 증가 효과 없음 (패시브 노드가 아님)");
+            return;
+        }
+
+        // 2. 적용 대상 무기(Target Weapons)가 있는지 확인
+        if (data.targetWeapons == null || data.targetWeapons.Length == 0)
+        {
+            Debug.LogWarning($"[{data.name}] 공격력 증가 수치가 있지만, Target Weapons가 비어있습니다");
+            return;
+        }
+
+        // 3. 등록된 모든 무기에 대해 공격력 증가 적용 (복합 노드 지원)
+        foreach (WeaponData weapon in data.targetWeapons)
+        {
+            if (weapon == null) continue;
+
+            float oldDamage = weapon.damage;
+
+            // [공격력 증가]
+            // 기존 공격력 + (기존 공격력 * (증가 퍼센트 / 100))
+            float increaseAmount = oldDamage * (data.attackPercent / 100f);
+            float newDamage = oldDamage + increaseAmount;
+
+            // 실제 WeaponData 스크립터블 오브젝트 값 수정
+            weapon.damage = newDamage;
+
+            Debug.Log($"$$ [스탯 적용됨!] {weapon.weaponName} 공격력 변경: {oldDamage} -> {newDamage} (+{increaseAmount:F1} / +{data.attackPercent}%)");
         }
     }
 }

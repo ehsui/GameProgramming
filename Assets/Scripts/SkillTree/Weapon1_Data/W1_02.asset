@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: W1_02
   m_EditorClassIdentifier: 
   description: "\uAE08\uAC15\uB839 \uACF5\uACA9\uB825 5% \uC99D\uAC00_02"
-  branch: 0
+  branchType: 0
   orderInBranch: 2
-  attackPercent: 0.05
   preNode: {fileID: 11400000, guid: e69738ef3d733694f95519d5360b45a7, type: 2}
-  targetWeapon: {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
+  attackPercent: 0.05
+  targetWeapons:
+  - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}

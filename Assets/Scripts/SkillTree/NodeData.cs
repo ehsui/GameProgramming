@@ -13,16 +13,17 @@ public enum BranchType
 [CreateAssetMenu(fileName = "NodeData", menuName = "SkillTree/NodeData")]
 public class NodeData : ScriptableObject
 {
-    // 노드 정보
-    public string description;
+    [Header("노드 정보")]
+    [TextArea] public string description; // TextArea로 변경해서 줄바꿈 가능하게
 
-    // 노드 분기 및 순서
+    [Header("노드 분기 및 순서")]
     public BranchType branchType;
-    public int orderInBranch;   // 분기 안에서 몇 번째 노드인지
-    public NodeData preNode;    // 선행 노드
-    
+    public int orderInBranch;
+    public NodeData preNode;
+
+    [Header("스탯 증가 효과")]
     public float attackPercent; // 증가량
 
-    public WeaponData targetWeapon; // 적용할 무기 데이터
-    public SkillData targetSkill;   // 적용할 스킬 데이터
+    [Header("적용 대상")]   // 이 노드의 효과를 적용할 무기들
+    public WeaponData[] targetWeapons;
 }

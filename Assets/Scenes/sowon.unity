@@ -122,33 +122,13 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &1163981942
+--- !u!1001 &799241228
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 829231041821954924, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 829231041821954924, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 829231041821954924, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 120
-      objectReference: {fileID: 0}
-    - target: {fileID: 829231041821954924, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 829231041821954924, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 954467180143651746, guid: 6680dee384341164d9e95639482e8109, type: 3}
       propertyPath: m_Name
       value: SkillTreeSystem
@@ -195,14 +175,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4878292400607124606, guid: 6680dee384341164d9e95639482e8109, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7845301194059322404, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: linePrefab
-      value: 
-      objectReference: {fileID: 1197120576037993860, guid: 525d9ef825c9db44c9947d5e94863e95, type: 3}
-    - target: {fileID: 7845301194922267267, guid: 6680dee384341164d9e95639482e8109, type: 3}
-      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
