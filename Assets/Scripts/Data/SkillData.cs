@@ -1,23 +1,41 @@
 ﻿using UnityEngine;
 
+// 스킬의 종류를 구분하는 명찰
+public enum SkillType
+{
+    Projectile,     // 투사체 발사 (예: 1-1, 2-1)
+    MultiProjectile,// 여러 개 발사 (예: 3-1)
+    Buff,           // 버프 (무적, 은신 등) (예: 1-2, 1-3)
+    AreaAttack,     // 범위 공격 (예: 2-2, 3-2)
+    Dash,           // 돌진 (예: 2-3)
+    Combo,           // 연타 (예: 3-3)
+    Laser,
+    Stealth,
+    Heal
+}
+
 [CreateAssetMenu(fileName = "New Skill Data", menuName = "Data/Skill Data")]
 public class SkillData : ScriptableObject
 {
-    [Header("스킬 정보")]
-    public string skillName;        // 스킬 이름 (예: 금강령+석장 무적)
-    [TextArea] public string description; // 스킬 설명
+    [Header("스킬 구분")]
+    public SkillType skillType;     // (추가) 이 스킬이 어떤 로직을 쓸지 결정
+
+    [Header("기본 정보")]
+    public string skillName;
+    [TextArea] public string description;
 
     [Header("비용 및 쿨타임")]
-    public float bodhicittaCost;    // 마나 소모량 (기존 25)
-    public float cooldown;          // 쿨타임 (기존 1.0)
+    public float bodhicittaCost = 25f; // 기본 코스트
+    public float cooldown = 1.0f;
 
-    [Header("전투 스탯")]
-    // 레벨 * damageMultiplier로 최종 데미지 계산
-    public float damageMultiplier;  // 데미지 계수 (예: 2.5, 18...)
-    public float duration;          // 지속 시간 (무적, 은신 등)
-    public int hitCount;            // 연타 횟수
+    [Header("전투 수치")]
+    public float damageMultiplier = 1.0f; // 레벨 비례 데미지 배율
+    public float duration = 0f;           // 지속 시간 (버프, 돌진 등)
+    public int count = 1;                 // 발사체 개수 or 연타 횟수
+    public float range = 5f;              // 사거리 or 범위
+    public float pushForce = 0f;          // 넉백이나 돌진 힘
 
-    [Header("리소스")]
-    public GameObject skillPrefab;  // 스킬용 투사체나 이펙트 프리팹
-    public GameObject hitEffectPrefab; // 타격 이펙트
+    [Header("리소스 (나중에 연결)")]
+    public GameObject skillPrefab;     // 투사체나 이펙트 프리팹
+    public GameObject loopEffectPrefab; // 지속 이펙트 프리팹
 }

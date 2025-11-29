@@ -37,6 +37,28 @@ public class PlayerStats : MonoBehaviour
         OnBodhicittaChanged?.Invoke(CurrentBodhicitta, maxBodhicitta);
     }
 
+    private void Update()
+    {
+        // [테스트용 치트키] - 나중에 게임 완성되면 지우세요!
+
+        // K키: 자해 (체력 -10) -> 사망 테스트용
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            TakeDamage(10);
+        }
+
+        // H키: 회복 (체력 +10)
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Heal(10);
+        }
+
+        // L키: 마나 충전 (보리심 +10) -> 스킬 테스트용
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            IncreaseBodhicitta(10);
+        }
+    }
     // --- [체력 관련 메서드] ---
 
     public void TakeDamage(float damage)
