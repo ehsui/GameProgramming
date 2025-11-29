@@ -12,4 +12,7 @@ public class Dialogue
 
     [Tooltip("캐릭터 스프라이트 (없으면 비워도 됨)")]
     public Sprite portrait; 
+
+    [Tooltip("배경 이미지 (비워두면 이전 배경 유지)")]
+    public Sprite background;
 }
