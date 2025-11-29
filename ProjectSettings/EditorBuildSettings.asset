@@ -8,4 +8,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 6dfaba6fede720b41b4fda46668458a6
+  - enabled: 1
+    path: Assets/Scenes/FirstMap.unity
+    guid: 476ef45cecf2fa443a16974aaf5daa2c
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 333cc1e816a76654c908b0ef3df7d3f9
+  - enabled: 1
+    path: Assets/Scenes/SecondMap.unity
+    guid: 7f06d3451793bea40b36d7a8424e666a
+  - enabled: 1
+    path: Assets/Scenes/Story.unity
+    guid: e45bb9f84d3fbca4386533f4a6913223
   m_configObjects: {}

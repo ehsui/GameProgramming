@@ -10,7 +10,7 @@ public class LobbyUI : MonoBehaviour
 
     public void OnOptionsButton()
     {
-        // 옵션 패널 활성화
+        // �샃�뀡 �뙣�꼸 �솢�꽦�솕
     }
 
     public void OnQuitButton()
