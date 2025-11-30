@@ -39,7 +39,7 @@ public class Tooltip : MonoBehaviour
 
         // ³ëµå ¿ÞÂÊ¿¡ ÅøÆÁ ¶ç¿ì±â
         Vector3 worldPos = anchor.transform.position;
-        panelRect.position = worldPos + new Vector3(0f, -60f, 0f);
+        panelRect.position = worldPos + new Vector3(0f, -100f, 0f);
     }
 
     public void Hide()
