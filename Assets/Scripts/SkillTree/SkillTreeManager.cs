@@ -37,8 +37,16 @@ public class SkillTreeManager : MonoBehaviour
     public void Awake()
     {
         // 싱글톤
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);  // 씬 바껴도 파괴하지 않기
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         // [테스트용] 게임 시작할 때마다 구매 목록 싹 비우기
         // 테스트 끝나면 이 줄은 꼭 지우거나 주석 처리!!!!!!!!!!

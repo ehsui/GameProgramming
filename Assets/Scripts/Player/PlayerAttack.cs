@@ -57,11 +57,15 @@ public class PlayerAttack : MonoBehaviour
         // 2. 데미지 판정 (OverlapCircle)
         Collider2D[] enemies = Physics2D.OverlapCircleAll(spawnPosition, weapon.attackRange * 0.5f, LayerMask.GetMask("Enemy"));
 
+        // ============================================ 공격력 수정 ============================================
+        float finalDamage = SkillTreeManager.Instance.GetFinalWeaponDamage(weapon);
+
         foreach (var enemy in enemies)
         {
-            Debug.Log($"[금강령] {enemy.name} 적중! 데미지: {weapon.damage}");
-            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
+            Debug.Log($"[금강령] {enemy.name} 적중! 데미지: {finalDamage}");
+            enemy.GetComponent<Health>()?.TakeDamage(finalDamage);
         }
+        // ============================================ 공격력 수정 ============================================
 
         // 디버그 시각화
         Debug.DrawRay(spawnPosition, Vector3.up, Color.cyan, 0.5f);
@@ -82,7 +86,10 @@ public class PlayerAttack : MonoBehaviour
             Projectile projectile = projectileObj.GetComponent<Projectile>();
             if (projectile != null)
             {
-                projectile.Initialize(weapon.damage, 10f, direction);
+                // ============================================ 공격력 수정 ============================================
+                float finalDamage = SkillTreeManager.Instance.GetFinalWeaponDamage(weapon);
+                projectile.Initialize(finalDamage, 10f, direction);
+                // ============================================ 공격력 수정 ============================================
             }
         }
     }
@@ -124,11 +131,16 @@ public class PlayerAttack : MonoBehaviour
         // 3. 판정 (OverlapBoxAll)
         Collider2D[] enemies = Physics2D.OverlapBoxAll(center, boxSize, 0, LayerMask.GetMask("Enemy"));
 
+        // ============================================ 공격력 수정 ============================================
+        float finalDamage = SkillTreeManager.Instance.GetFinalWeaponDamage(weapon);
+
         foreach (var enemy in enemies)
         {
-            enemy.GetComponent<Health>()?.TakeDamage(weapon.damage);
-            Debug.Log($"[금강저/Box] {enemy.name} 베기! 데미지: {weapon.damage}");
+            enemy.GetComponent<Health>()?.TakeDamage(finalDamage);
+            Debug.Log($"[금강저/Box] {enemy.name} 베기! 데미지: {finalDamage}");
         }
+        // ============================================ 공격력 수정 ============================================
+
     }
     // 에디터에서 공격 범위를 눈으로 확인하는 기능
     private void OnDrawGizmosSelected()
