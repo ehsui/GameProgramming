@@ -54,7 +54,12 @@ public class Enemy : MonoBehaviour
     {
         if (distance > stopDistance)
         {
-            transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            // 플레이어의 X좌표 + 적(나)의 현재 Y좌표를 합쳐서 새로운 목표지점을 만듦
+            Vector2 targetPosition = new Vector2(player.position.x, transform.position.y);
+
+            // player.position 대신 targetPosition으로 이동
+            transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            
             LookAtTarget(player.position);
             SetAnimationState(true);
         }

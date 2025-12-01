@@ -7,15 +7,14 @@ public class SceneController : MonoBehaviour
 {
     public string nextSceneName;
 
-    void Update()
+void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.W)) 
         {
             if (!string.IsNullOrEmpty(nextSceneName))
             {
                 SceneManager.LoadScene(nextSceneName);
             }
-
         }
     }
 }

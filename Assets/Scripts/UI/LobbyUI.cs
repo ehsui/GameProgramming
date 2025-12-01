@@ -5,7 +5,7 @@ public class LobbyUI : MonoBehaviour
 {
     public void OnPlayButton()
     {
-        SceneManager.LoadScene("Tutorial");
+        SceneManager.LoadScene("Story");
     }
 
     public void OnOptionsButton()

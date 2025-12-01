@@ -6,6 +6,7 @@ public class EnemyHealth : Health
 {
     [Header("Death Settings")]
     public float deathDelay = 1.5f;
+    public int karmaReward = 10; // 이 적을 죽이면 얻는 업보 양
 
     [Header("Hit Settings")]
     public float hitStunTime = 0.5f;
@@ -13,21 +14,18 @@ public class EnemyHealth : Health
     private Animator anim;
     private Rigidbody2D rb;
 
-    // 🔥 두 종류의 이동 스크립트 변수를 모두 선언
-    private Enemy enemyScript;   // 근거리 적 (예전 버전)
-    private Enemy2 enemy2Script; // 원거리 적 (새 버전)
+    private Enemy enemyScript;   
+    private Enemy2 enemy2Script; 
 
     protected override void Awake()
     {
         base.Awake();
         
-        // 1. Animator 찾기 (자식까지 뒤짐)
         anim = GetComponent<Animator>();
         if (anim == null) anim = GetComponentInChildren<Animator>();
 
         rb = GetComponent<Rigidbody2D>();
 
-        // 2. 두 스크립트를 모두 찾아봄 (없으면 null이 들어감)
         enemyScript = GetComponent<Enemy>();
         enemy2Script = GetComponent<Enemy2>();
     }
@@ -41,16 +39,12 @@ public class EnemyHealth : Health
         if (currentHealth > 0)
         {
             if (anim != null) anim.SetTrigger("Hit");
-            
-            // 경직 시작
             StartCoroutine(ApplyHitStun());
         }
     }
 
-    // 경직(Hit Stun) 처리
     IEnumerator ApplyHitStun()
     {
-        // 1. 있는 스크립트는 다 끔
         if (enemyScript != null) enemyScript.enabled = false;
         if (enemy2Script != null) enemy2Script.enabled = false;
 
@@ -58,7 +52,6 @@ public class EnemyHealth : Health
 
         yield return new WaitForSeconds(hitStunTime);
 
-        // 2. 살아있다면 다시 킴 (있는 것만)
         if (currentHealth > 0)
         {
             if (enemyScript != null) enemyScript.enabled = true;
@@ -70,10 +63,22 @@ public class EnemyHealth : Health
     {
         StopAllCoroutines(); 
 
+        // 1. 애니메이션 실행
         if (anim != null) anim.SetBool("IsDead", true);
 
-        DisableEnemy(); // 영구 정지
+        // 2. 플레이어에게 Karma 지급
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats pStats = player.GetComponent<PlayerStats>();
+            if (pStats != null)
+            {
+                pStats.AddKarma(karmaReward); // 설정한 만큼 업보 증가
+            }
+        }
 
+        // 3. 적 기능 정지 및 삭제 대기
+        DisableEnemy(); 
         StartCoroutine(DeathDelay());
     }
 
@@ -85,7 +90,6 @@ public class EnemyHealth : Health
 
     void DisableEnemy()
     {
-        // 두 스크립트 중 존재하는 것을 확실히 끔
         if (enemyScript != null) enemyScript.enabled = false;
         if (enemy2Script != null) enemy2Script.enabled = false;
         

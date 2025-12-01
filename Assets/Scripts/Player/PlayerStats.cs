@@ -164,4 +164,13 @@ public class PlayerStats : MonoBehaviour
         if (potionCount > maxPotionCount) potionCount = maxPotionCount;
         OnPotionCountChanged?.Invoke(potionCount);
     }
+
+    public void AddKarma(int amount)
+    {
+        karma += amount;
+        Debug.Log($"업보(Karma) 획득! 현재 업보: {karma}");
+
+        // (나중에 업보 UI가 생긴다면 여기서 이벤트를 호출하면 됩니다)
+        // OnKarmaChanged?.Invoke(karma); 
+    }
 }
