@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System; // Action을 쓰기 위해 필요
+using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -28,9 +29,9 @@ public class PlayerStats : MonoBehaviour
     // float: 현재값, float: 최대값
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnBodhicittaChanged;
-    // [수정 1] 레벨업 시 레벨(int)을 UI에 넘겨줘야 하므로 
+    // [수정 1] 레벨업 시 레벨(int)을 UI에 넘겨줘야 하므로 ===============================================
     public event Action<int> OnLevelChanged; 
-    // [수정 2] 업보 변경 이벤트 정의 추가 (현재 업보, 필요 업보)
+    // [수정 2] 업보 변경 이벤트 정의 추가 (현재 업보, 필요 업보) ===============================================
     public event Action<int, int> OnKarmaChanged;
 
     public event Action OnDie;
@@ -51,7 +52,7 @@ public class PlayerStats : MonoBehaviour
         // 포션 개수 UI 갱신
         OnPotionCountChanged?.Invoke(potionCount); // 시작 시 UI 갱신
 
-        // [수정3] 시작 시 레벨과 업보 UI 갱신
+        // [수정3] 시작 시 레벨과 업보 UI 갱신 ===============================================
         OnLevelChanged?.Invoke(level);
         OnKarmaChanged?.Invoke(karma, GetRequiredKarma());
     }
@@ -109,10 +110,21 @@ public class PlayerStats : MonoBehaviour
         Debug.Log($"체력 회복: {CurrentHealth}");
     }
 
+    // [수정4] 사망 처리 메서드, 값 초기화 및 이동 ===============================================
     private void Die()
     {
         Debug.Log("플레이어 사망!");
-        OnDie?.Invoke(); // 컨트롤러에게 "나 죽었어"라고 알림
+        OnDie?.Invoke(); 
+
+        // 수치 초기화 (부활을 대비해 스탯 리셋)
+        CurrentHealth = maxHealth;  // 체력 꽉 채우기
+        CurrentBodhicitta = 0f;     // 보리심 0으로 (Awake 기준)
+        level = 1;
+        karma = 0;
+        potionCount = 3;
+
+        // 2. 로비 씬으로 이동
+        SceneManager.LoadScene("Lobby"); 
     }
 
     // --- [보리심(마나) 관련 메서드] ---
@@ -173,7 +185,7 @@ public class PlayerStats : MonoBehaviour
         OnPotionCountChanged?.Invoke(potionCount);
     }
 
-    // [수정4] 업보(경험치) 관련 메서드    
+    // [수정4] 업보(경험치) 관련 메서드  ===============================================
     // 다음 레벨까지 필요한 Karma 계산 공식 (변수 없이 함수로 해결)
     // 공식: 레벨 * 100 (1Lv -> 100, 2Lv -> 200, 3Lv -> 300...)
     private int GetRequiredKarma()
