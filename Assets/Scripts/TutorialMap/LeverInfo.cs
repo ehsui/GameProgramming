@@ -9,13 +9,14 @@ public class LeverInfo : MonoBehaviour
     public GameObject[] ExitBarrier;
 
     public bool leverActived = false;
+    bool isPlayerNearby = false;
 
     public CinemachineVirtualCamera playerCamera;
     public CinemachineVirtualCamera barrierCamera;
 
     void Update()
     {
-        if (!leverActived && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerNearby && !leverActived && Input.GetKeyDown(KeyCode.E))
         {
             ActiveLever();
         }
@@ -25,6 +26,7 @@ public class LeverInfo : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            isPlayerNearby = true;
             if (!leverActived)
             {
                 leverInfoText.SetActive(true);
@@ -36,6 +38,7 @@ public class LeverInfo : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            isPlayerNearby = false;
             leverInfoText.SetActive(false);
         }
     }
