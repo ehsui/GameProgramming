@@ -35,11 +35,21 @@ public class EnemyHealth : Health
         if (currentHealth <= 0) return;
 
         base.TakeDamage(amount);
-
+    
         if (currentHealth > 0)
         {
             if (anim != null) anim.SetTrigger("Hit");
             StartCoroutine(ApplyHitStun());
+        }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats pStats = player.GetComponent<PlayerStats>();
+            if (pStats != null)
+            {
+                pStats.IncreaseBodhicitta(10f); // 적에게 피해를 줄 때마다 보리심 5 획득
+            }
         }
     }
 
