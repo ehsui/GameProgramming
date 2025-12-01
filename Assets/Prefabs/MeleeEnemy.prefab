@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1274135401162674415}
   - component: {fileID: 1274135401162674408}
   - component: {fileID: 1274135401162674409}
+  - component: {fileID: -2086266914390971144}
   m_Layer: 0
   m_Name: MeleeEnemy
   m_TagString: Enemy
@@ -179,3 +180,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   anim: {fileID: 0}
+--- !u!114 &-2086266914390971144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274135401162674410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8983a440d15ceb3499d6af756df014b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 100
+  DeathDelayTime: 1.5
+  deathDelay: 1.5
+  karmaReward: 10
+  hitStunTime: 0.5

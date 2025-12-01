@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  damage: 1
+  damage: 8
   lifeTime: 3
   defaultScale: {x: 5, y: 5, z: 5}
 --- !u!50 &4954184612899996433

@@ -14,7 +14,7 @@ public class PlayerHUD : MonoBehaviour
     public Sprite emptyPotionSprite;
     public Sprite filledPotionSprite;
 
-    // === 플레이어 스탯 참조 (PlayerStats 하나만 씀) ===
+    // === 플레이어 스탯 참조 ===
     private PlayerStats playerStats;
 
     void Start()
@@ -24,20 +24,20 @@ public class PlayerHUD : MonoBehaviour
         
         if (playerObject != null)
         {
-            // 2. PlayerStats 컴포넌트 하나만 가져오면 됨
             playerStats = playerObject.GetComponent<PlayerStats>();
 
             if (playerStats != null)
             {
-                // 3. 이벤트 구독 (모든 이벤트가 PlayerStats에 있음)
+                // 3. 이벤트 구독
                 playerStats.OnHealthChanged += UpdateHealthBar;
                 playerStats.OnBodhicittaChanged += UpdateBodhicittaBar;
-                //playerStats.OnPotionChanged += UpdatePotionIcons; 
+                playerStats.OnPotionCountChanged += UpdatePotionIcons; 
                 
-                // 4. 초기값 갱신 (UI 강제 동기화)
+                // 4. 초기값 갱신
                 UpdateHealthBar(playerStats.CurrentHealth, playerStats.maxHealth);
                 UpdateBodhicittaBar(playerStats.CurrentBodhicitta, playerStats.maxBodhicitta);
-                //UpdatePotionIcons(playerStats.potionCount);
+                
+                UpdatePotionIcons(playerStats.potionCount);
             }
         }
         else
@@ -53,7 +53,9 @@ public class PlayerHUD : MonoBehaviour
         {
             playerStats.OnHealthChanged -= UpdateHealthBar;
             playerStats.OnBodhicittaChanged -= UpdateBodhicittaBar;
-            //playerStats.OnPotionChanged -= UpdatePotionIcons;
+            
+            // ? [수정 3] 주석 해제 & 이름 일치
+            playerStats.OnPotionCountChanged -= UpdatePotionIcons;
         }
     }
 
@@ -75,16 +77,18 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
+    // 포션 아이콘 업데이트
     public void UpdatePotionIcons(int count)
     {
+        // 배열 크기만큼 반복
         for (int i = 0; i < potionIcons.Length; i++)
         {        
             if (potionIcons[i] != null)
             {
                 // 현재 개수(count)보다 인덱스(i)가 작으면 '채워진 물약', 아니면 '빈 물약'
+                // 예: count가 2개면 -> index 0(참), index 1(참), index 2(거짓)
                 potionIcons[i].sprite = (i < count) ? filledPotionSprite : emptyPotionSprite;
             }
         }
     }
-
 }
