@@ -17,11 +17,14 @@ public class Tooltip : MonoBehaviour
         Hide();
     }
 
-    public void Show(string info, RectTransform anchor, bool canPurchase)
+    public void Show(NodeData data, RectTransform anchor, bool canPurchase)
     {
         panel.SetActive(true);
         tooltipTextGreen.gameObject.SetActive(false);
         tooltipTextRed.gameObject.SetActive(false);
+
+        // NodeData에서 자동으로 생성된 설명 가져오기
+        string info = data.AutoDescription;
 
         if (canPurchase)
         {
@@ -37,7 +40,7 @@ public class Tooltip : MonoBehaviour
         // 툴팁 위치 노드 옆으로
         RectTransform panelRect = panel.transform as RectTransform;
 
-        // 노드 왼쪽에 툴팁 띄우기
+        // 노드 아래쪽에 툴팁 띄우기
         Vector3 worldPos = anchor.transform.position;
         panelRect.position = worldPos + new Vector3(0f, -100f, 0f);
     }

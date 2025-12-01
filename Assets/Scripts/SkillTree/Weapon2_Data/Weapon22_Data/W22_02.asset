@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bb34ed04234ba46b4e08256b2313fb, type: 3}
   m_Name: W22_02
   m_EditorClassIdentifier: 
-  description: "\uC11D\uC7A5+\uC11D\uC7A5 \uACF5\uACA9\uB825 5% \uC99D\uAC00_02"
+  nodeName: 
+  description: "\uC11D\uC7A5 + \uC11D\uC7A5 \uACF5\uACA9\uB825 +1.5"
   branchType: 7
   orderInBranch: 4
   preNode: {fileID: 11400000, guid: 78d15de9a58555c41878dfda58d04c24, type: 2}
-  attackPercent: 0.05
+  bonusType: 1
+  bonusValue: 1.5
   targetWeapons:
   - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
   - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
