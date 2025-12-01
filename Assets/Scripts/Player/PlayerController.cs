@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     public PlayerSkillCaster skillCaster;
 
+    [Header("Effects")]
+    public GameObject potionEffectPrefab; // 포션 사용 시 머리 위에 뜰 이펙트 (하트 등)
+
     // 상태 머신
     public PlayerStateMachine StateMachine { get; private set; }
 
@@ -82,6 +85,7 @@ public class PlayerController : MonoBehaviour
         inputReader.OnMainWeaponSwitchEvent += SwapMainWeapon;
         inputReader.OnSubWeaponSwitchEvent += SwapSubWeapon;
         inputReader.OnSkillEvent += OnSkill;
+        inputReader.OnPotionEvent += OnPotion; // R키 구독
 
         SwapMainWeapon(0);
         SwapSubWeapon(0);
@@ -204,6 +208,33 @@ public class PlayerController : MonoBehaviour
         {
             CurrentSubWeapon = subWeapons[index];
             Debug.Log($"보조무기 변경: {CurrentSubWeapon.weaponName}");
+        }
+    }
+    // R키 입력 핸들러
+    private void OnPotion()
+    {
+        // 죽은 상태에서는 사용 불가
+        if (StateMachine.CurrentState == DeadState) return;
+
+        // 스탯에게 사용 요청 -> 성공하면 이펙트 재생
+        if (stats.UsePotion())
+        {
+            PlayPotionEffect();
+        }
+    }
+
+    private void PlayPotionEffect()
+    {
+        if (potionEffectPrefab != null)
+        {
+            // 플레이어 위치(또는 머리 위)에 생성
+            Vector2 spawnPos = transform.position + Vector3.up * 1.0f; // 머리 위
+            GameObject effect = Instantiate(potionEffectPrefab, spawnPos, Quaternion.identity);
+
+            // 플레이어 따라다니게 설정
+            effect.transform.SetParent(this.transform);
+
+            // (AutoDestroy가 프리팹에 붙어있어야 함)
         }
     }
 }
