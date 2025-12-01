@@ -87,7 +87,7 @@ public class SkillTreeManager : MonoBehaviour
     public bool IsLevelAllowed(NodeData data)
     {
         // 1레벨마다 노드 2개씩 구매 가능
-        int maxOrder = levelData.level * 2;
+        int maxOrder = levelData.level * 1;
         return data.orderInBranch <= maxOrder;
     }
 
@@ -311,7 +311,7 @@ public class SkillTreeManager : MonoBehaviour
                     currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
 
                     // 현재 최종 공격력 출력
-                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 +{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 +{data.bonusValue} (현재 '{weapon.weaponName}' 공격력: {currentFinalDamage:F2})");
                     break;
 
                 case AttackBonusType.Multiplier:
@@ -321,7 +321,7 @@ public class SkillTreeManager : MonoBehaviour
                     currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
 
                     // 현재 최종 공격력 출력 (소수점 2자리까지 표시)
-                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 x{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 x{data.bonusValue} (현재 '{weapon.weaponName}' 공격력: {currentFinalDamage:F2})");
                     break;
             }
         }

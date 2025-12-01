@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: W12_02
   m_EditorClassIdentifier: 
   nodeName: 
-  description: "\uAE08\uAC15\uB839 + \uC11D\uC7A5 \uACF5\uACA9\uB825 +1.5"
+  description: "\uAE08\uAC15\uB839 + \uC11D\uC7A5 \uACF5\uACA9\uB825 +2.0"
   branchType: 4
   orderInBranch: 4
   preNode: {fileID: 11400000, guid: ccc65510ec8ffb54881279b3c5d8ad0f, type: 2}
   bonusType: 1
-  bonusValue: 1.5
+  bonusValue: 2
   targetWeapons:
   - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
   - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}

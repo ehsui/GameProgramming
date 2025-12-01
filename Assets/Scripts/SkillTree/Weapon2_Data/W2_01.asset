@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: W2_01
   m_EditorClassIdentifier: 
   nodeName: 
-  description: "\uC11D\uC7A5 \uACF5\uACA9\uB825 +1.0"
+  description: "\uC11D\uC7A5 \uACF5\uACA9\uB825 +0.5"
   branchType: 1
   orderInBranch: 1
   preNode: {fileID: 0}
   bonusType: 1
-  bonusValue: 1
+  bonusValue: 0.5
   targetWeapons:
   - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
