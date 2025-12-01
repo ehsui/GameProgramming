@@ -21,7 +21,7 @@ public class CutsceneManager : MonoBehaviour
     public float typingSpeed = 0.05f; 
 
     [Header("Move To Scene")]
-    public string nextSceneName = "GameScene"; 
+    public string nextSceneName = "Tutorial"; 
 
 
     private int currentIndex = -1;
