@@ -476,6 +476,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4951196348904910037, guid: 05d12c097dfb94249a222db1e8042dbc, type: 3}
+      propertyPath: skillCaster
+      value: 
+      objectReference: {fileID: 1946371227}
+    - target: {fileID: 4951196348904910037, guid: 05d12c097dfb94249a222db1e8042dbc, type: 3}
+      propertyPath: potionEffectPrefab
+      value: 
+      objectReference: {fileID: 781808138135571225, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
     - target: {fileID: 4951196348904910042, guid: 05d12c097dfb94249a222db1e8042dbc, type: 3}
       propertyPath: m_Name
       value: PEPE
@@ -486,3 +494,60 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 05d12c097dfb94249a222db1e8042dbc, type: 3}
+--- !u!1001 &7741151514687844635
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 781808138135571225, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_Name
+      value: potion_heal
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688856629970411143, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}

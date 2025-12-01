@@ -12,6 +12,14 @@ public class PlayerStats : MonoBehaviour
     [Header("State")]
     public bool isInvincible = false; // 무적 상태 (스킬용)
 
+    [Header("Inventory")]
+    public int potionCount = 3; // 시작 시 포션 3개
+    public int maxPotionCount = 5; // 최대 소지 개수
+    public float potionHealAmount = 30f; // 포션 회복량
+
+    // UI 갱신용 이벤트 (현재 개수)
+    public event Action<int> OnPotionCountChanged;
+
     // 외부에서 읽기만 가능하도록 프로퍼티 설정
     public float CurrentHealth { get; private set; }
     public float CurrentBodhicitta { get; private set; }
@@ -35,6 +43,9 @@ public class PlayerStats : MonoBehaviour
         // 시작하자마자 UI 갱신을 위해 이벤트 한 번 발생
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
         OnBodhicittaChanged?.Invoke(CurrentBodhicitta, maxBodhicitta);
+
+        // 포션 개수 UI 갱신
+        OnPotionCountChanged?.Invoke(potionCount); // 시작 시 UI 갱신
     }
 
     private void Update()
@@ -118,5 +129,39 @@ public class PlayerStats : MonoBehaviour
         CurrentBodhicitta -= amount;
         OnBodhicittaChanged?.Invoke(CurrentBodhicitta, maxBodhicitta);
         return true; // 사용 성공
+    }
+    public bool UsePotion()
+    {
+        // 1. 포션이 없으면 실패
+        if (potionCount <= 0)
+        {
+            Debug.Log("포션이 없습니다!");
+            return false;
+        }
+
+        // 2. 체력이 이미 꽉 찼으면 실패 (선택 사항: 아까우니까)
+        if (CurrentHealth >= maxHealth)
+        {
+            Debug.Log("체력이 이미 가득 찼습니다.");
+            return false;
+        }
+
+        // 3. 포션 사용 (개수 감소 & 회복)
+        potionCount--;
+        Heal(potionHealAmount);
+
+        // UI 알림
+        OnPotionCountChanged?.Invoke(potionCount);
+        Debug.Log($"포션 사용! 남은 개수: {potionCount}");
+
+        return true; // 사용 성공
+    }
+
+    // (나중에 아이템 먹어서 포션 채울 때 사용)
+    public void AddPotion(int amount)
+    {
+        potionCount += amount;
+        if (potionCount > maxPotionCount) potionCount = maxPotionCount;
+        OnPotionCountChanged?.Invoke(potionCount);
     }
 }

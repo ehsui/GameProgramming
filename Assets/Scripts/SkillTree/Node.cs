@@ -47,7 +47,7 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             nodeImage.color = normalColor;
         }
 
-        Tooltip.Instance.Show(data.description, tooltipAnchor, canHover); // 툴팁 띄우기
+        Tooltip.Instance.Show(this.data, tooltipAnchor, canHover); // 툴팁 띄우기
     }
 
     // 노드 밖으로 마우스 이동했을 때

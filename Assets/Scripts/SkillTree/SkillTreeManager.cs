@@ -24,7 +24,15 @@ public class SkillTreeManager : MonoBehaviour
     [Header("SkillTree Tab Controller")]
     public SkillTreeTabController tabController;
 
+    // 무기 강화 스탯
+    private class DamageBonus
+    {
+        public float flatAddTotal = 0f;     // 고정값 합계
+        public float multiplierTotal = 1f;  // 배율 곱계
+    }
+
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
+    private Dictionary<WeaponData, DamageBonus> weaponBonusMap = new Dictionary<WeaponData, DamageBonus>();
 
     public void Awake()
     {
@@ -181,8 +189,6 @@ public class SkillTreeManager : MonoBehaviour
         // 부모 LineParent 찾기
         Transform targetLineParent = null;
 
-        Debug.Log($"[라인 생성 시도] 노드명: {data.name}, 감지된 BranchType: {data.branchType}, 부모 노드: {parentNode.name}");
-
         switch (data.branchType) // NodeData의 BranchType
         {
             case BranchType.Weapon1:
@@ -258,36 +264,78 @@ public class SkillTreeManager : MonoBehaviour
     // 노드 구매하면 스탯 증가
     void ApplyNodeEffect(NodeData data)
     {
-        // 1. 공격력 증가 효과가 있는지 확인
-        if (data.attackPercent <= 0f)
+        // 효과가 없거나 대상 무기가 없으면 패스
+        if (data.bonusType == AttackBonusType.None || data.bonusValue == 0f || data.targetWeapons == null) return;
+
+        // 적용 대상 무기 이름들 수집(금강령 + 석장)
+        string weaponNamesStr = "";
+        for (int i = 0; i < data.targetWeapons.Length; i++)
         {
-            Debug.Log($">> {data.name}: 공격력 증가 효과 없음 (패시브 노드가 아님)");
-            return;
+            if (data.targetWeapons[i] == null) continue;
+            weaponNamesStr += data.targetWeapons[i].weaponName;
+            if (i < data.targetWeapons.Length - 1) weaponNamesStr += " + ";
         }
 
-        // 2. 적용 대상 무기(Target Weapons)가 있는지 확인
-        if (data.targetWeapons == null || data.targetWeapons.Length == 0)
-        {
-            Debug.LogWarning($"[{data.name}] 공격력 증가 수치가 있지만, Target Weapons가 비어있습니다");
-            return;
-        }
-
-        // 3. 등록된 모든 무기에 대해 공격력 증가 적용 (복합 노드 지원)
+        // 각 무기별로 보너스 적용
         foreach (WeaponData weapon in data.targetWeapons)
         {
             if (weapon == null) continue;
 
-            float oldDamage = weapon.damage;
+            // 1. 이 무기의 보너스 기록이 없으면 새로 만듦
+            if (!weaponBonusMap.ContainsKey(weapon))
+            {
+                weaponBonusMap.Add(weapon, new DamageBonus());
+            }
 
-            // [공격력 증가]
-            // 기존 공격력 + (기존 공격력 * (증가 퍼센트 / 100))
-            float increaseAmount = oldDamage * (data.attackPercent / 100f);
-            float newDamage = oldDamage + increaseAmount;
+            // 2. 보너스 타입에 따라 값을 누적 기록
+            DamageBonus currentBonus = weaponBonusMap[weapon];
 
-            // 실제 WeaponData 스크립터블 오브젝트 값 수정
-            weapon.damage = newDamage;
+            // 최종 공격력 계산을 위해 기본 공격력 가져오기
+            float baseDamage = weapon.damage;
+            float currentFinalDamage = 0f;
 
-            Debug.Log($"$$ [스탯 적용됨!] {weapon.weaponName} 공격력 변경: {oldDamage} -> {newDamage} (+{increaseAmount:F1} / +{data.attackPercent}%)");
+            switch (data.bonusType)
+            {
+                case AttackBonusType.FlatAdd:
+                    currentBonus.flatAddTotal += data.bonusValue;
+
+                    // 현재 시점의 최종 공격력 계산: (기본 + 고정합) * 배율곱
+                    currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
+
+                    // 현재 최종 공격력 출력
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 +{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
+                    break;
+
+                case AttackBonusType.Multiplier:
+                    currentBonus.multiplierTotal *= data.bonusValue;
+
+                    // 현재 시점의 최종 공격력 계산
+                    currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
+
+                    // 현재 최종 공격력 출력 (소수점 2자리까지 표시)
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 x{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
+                    break;
+            }
         }
+    }
+
+    // 외부에서 최종 데미지를 요청할 때 계산하는 함수
+    public float GetFinalWeaponDamage(WeaponData weapon)
+    {
+        float baseDamage = weapon.damage; // 원본 공격력
+
+        // 보너스 기록이 없으면 원본 그대로 반환
+        if (!weaponBonusMap.ContainsKey(weapon))
+        {
+            return baseDamage;
+        }
+
+        // 기록이 있으면 계산 시작
+        DamageBonus bonus = weaponBonusMap[weapon];
+
+        // 최종 데미지 = (원본 + 고정값 총합) * 배율 총곱
+        float finalDamage = (baseDamage + bonus.flatAddTotal) * bonus.multiplierTotal;
+
+        return finalDamage;
     }
 }
