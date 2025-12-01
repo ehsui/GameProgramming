@@ -289,15 +289,31 @@ public class SkillTreeManager : MonoBehaviour
 
             // 2. 보너스 타입에 따라 값을 누적 기록
             DamageBonus currentBonus = weaponBonusMap[weapon];
+
+            // 최종 공격력 계산을 위해 기본 공격력 가져오기
+            float baseDamage = weapon.damage;
+            float currentFinalDamage = 0f;
+
             switch (data.bonusType)
             {
                 case AttackBonusType.FlatAdd:
                     currentBonus.flatAddTotal += data.bonusValue;
-                    Debug.Log($"[{weaponNamesStr}] 공격력 +{data.bonusValue} (현재 무기 '{weapon.weaponName}'의 총합: +{currentBonus.flatAddTotal})");
+
+                    // 현재 시점의 최종 공격력 계산: (기본 + 고정합) * 배율곱
+                    currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
+
+                    // 현재 최종 공격력 출력
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 +{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
                     break;
+
                 case AttackBonusType.Multiplier:
                     currentBonus.multiplierTotal *= data.bonusValue;
-                    Debug.Log($"[{weaponNamesStr}] 공격력 x{data.bonusValue}(현재 무기 '{weapon.weaponName}'의 총배율: x{currentBonus.multiplierTotal:F2})");
+
+                    // 현재 시점의 최종 공격력 계산
+                    currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
+
+                    // 현재 최종 공격력 출력 (소수점 2자리까지 표시)
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 x{data.bonusValue} (현재 '{weapon.weaponName}' 최종 공격력: {currentFinalDamage:F2})");
                     break;
             }
         }
