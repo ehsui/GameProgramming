@@ -28,8 +28,12 @@ public class PlayerStats : MonoBehaviour
     // float: 현재값, float: 최대값
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnBodhicittaChanged;
-    public event Action OnLevelChanged;
-    public event Action OnDie; // 사망 시 발생
+    // [수정 1] 레벨업 시 레벨(int)을 UI에 넘겨줘야 하므로 
+    public event Action<int> OnLevelChanged; 
+    // [수정 2] 업보 변경 이벤트 정의 추가 (현재 업보, 필요 업보)
+    public event Action<int, int> OnKarmaChanged;
+
+    public event Action OnDie;
 
     private void Awake()
     {
@@ -46,6 +50,10 @@ public class PlayerStats : MonoBehaviour
 
         // 포션 개수 UI 갱신
         OnPotionCountChanged?.Invoke(potionCount); // 시작 시 UI 갱신
+
+        // [수정3] 시작 시 레벨과 업보 UI 갱신
+        OnLevelChanged?.Invoke(level);
+        OnKarmaChanged?.Invoke(karma, GetRequiredKarma());
     }
 
     private void Update()
@@ -165,12 +173,46 @@ public class PlayerStats : MonoBehaviour
         OnPotionCountChanged?.Invoke(potionCount);
     }
 
+    // [수정4] 업보(경험치) 관련 메서드    
+    // 다음 레벨까지 필요한 Karma 계산 공식 (변수 없이 함수로 해결)
+    // 공식: 레벨 * 100 (1Lv -> 100, 2Lv -> 200, 3Lv -> 300...)
+    private int GetRequiredKarma()
+    {
+        return level * 100;
+    }
+
     public void AddKarma(int amount)
     {
         karma += amount;
-        Debug.Log($"업보(Karma) 획득! 현재 업보: {karma}");
+        Debug.Log($"업보(Karma) 획득: {amount} (현재: {karma}/{GetRequiredKarma()})");
 
-        // (나중에 업보 UI가 생긴다면 여기서 이벤트를 호출하면 됩니다)
-        // OnKarmaChanged?.Invoke(karma); 
+        // 레벨업 체크: 현재 Karma가 필요량보다 많거나 같으면
+        while (karma >= GetRequiredKarma())
+        {
+            karma -= GetRequiredKarma(); // 경험치 소모 (남은 건 다음 레벨로)
+            LevelUp();
+        }
+
+        // UI 갱신 (현재 Karma, 필요량)
+        OnKarmaChanged?.Invoke(karma, GetRequiredKarma());
+    }
+
+    private void LevelUp()
+    {
+        level++;
+        Debug.Log($"레벨업! 레벨 {level} 달성!");
+
+        // 1. 스탯 증가 (보상)
+        maxHealth += 20;
+        maxBodhicitta += 10;
+
+        // 2. 완전 회복
+        CurrentHealth = maxHealth;
+        CurrentBodhicitta = maxBodhicitta;
+
+        // 3. UI 알림
+        OnLevelChanged?.Invoke(level);
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+        OnBodhicittaChanged?.Invoke(CurrentBodhicitta, maxBodhicitta);
     }
 }
