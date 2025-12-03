@@ -22,4 +22,8 @@ public class WeaponData : ScriptableObject
     
     public GameObject projectilePrefab;
     public GameObject meleeSlashPrefab;
+
+    // [1203 추가] 공격 사운드 
+    [Header("공격 사운드")]
+    public AudioClip attackSound;
 }
