@@ -24,6 +24,9 @@ public class SkillTreeManager : MonoBehaviour
     [Header("SkillTree Tab Controller")]
     public SkillTreeTabController tabController;
 
+    [Header("Current Level")]
+    public Text currentLevelText;
+
     // 무기 강화 스탯
     private class DamageBonus
     {
@@ -81,6 +84,8 @@ public class SkillTreeManager : MonoBehaviour
 
         // 2. 저장된 노드 데이터 불러와서 구매한 노드 색 변경
         RefreshUI();
+
+        currentLevelText.text = $"Current Level : {levelData.level}";
     }
 
     // 구매 가능한 노드인지 레벨 체크
