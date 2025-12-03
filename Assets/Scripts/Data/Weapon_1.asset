@@ -24,3 +24,4 @@ MonoBehaviour:
   effectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 7277185083647824485, guid: 1a8db0b0fbfd138479fefe9222cfe8b5, type: 3}
   meleeSlashPrefab: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 8b81a6c6f0ca46c4fb42e871dc0222c6, type: 3}
