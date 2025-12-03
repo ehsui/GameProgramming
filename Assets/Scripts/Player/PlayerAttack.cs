@@ -3,10 +3,14 @@
 public class PlayerAttack : MonoBehaviour
 {
     private PlayerController controller;
+    // [1203 추가] 오디오 소스 컴포넌트
+    private AudioSource audioSource;
 
     private void Awake()
     {
         controller = GetComponent<PlayerController>();
+        // [1203 추가] 오디오 소스 컴포넌트 가져오기
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void PerformAttack(WeaponData weapon)
@@ -67,6 +71,13 @@ public class PlayerAttack : MonoBehaviour
         }
         // ============================================ 공격력 수정 ============================================
 
+        //[1203 추가] 금강령 공격 사운드 재생
+        if (audioSource != null && weapon.attackSound != null)
+        {
+            // 연사 시 소리 끊김 방지
+            audioSource.PlayOneShot(weapon.attackSound); 
+        }
+
         // 디버그 시각화
         Debug.DrawRay(spawnPosition, Vector3.up, Color.cyan, 0.5f);
     }
@@ -90,6 +101,13 @@ public class PlayerAttack : MonoBehaviour
                 float finalDamage = SkillTreeManager.Instance.GetFinalWeaponDamage(weapon);
                 projectile.Initialize(finalDamage, 10f, direction);
                 // ============================================ 공격력 수정 ============================================
+            }
+
+            // [1203 수정] 투사체 발사 사운드 재생
+            if (audioSource != null && weapon.attackSound != null)
+            {
+                // 연사 시 소리 끊김 방지
+                audioSource.PlayOneShot(weapon.attackSound); 
             }
         }
     }
@@ -117,6 +135,13 @@ public class PlayerAttack : MonoBehaviour
                 Vector3 scale = slash.transform.localScale;
                 scale.x = -Mathf.Abs(scale.x);
                 slash.transform.localScale = scale;
+            }
+
+            //[1203 추가] 금강저 공격 사운드 재생
+            if (audioSource != null && weapon.attackSound != null)
+            {
+                // 연사 시 소리 끊김 방지
+                audioSource.PlayOneShot(weapon.attackSound); 
             }
 
             // (만약 AutoDestroy 스크립트가 없다면 안전하게 삭제)
