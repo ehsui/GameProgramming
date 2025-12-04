@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 24442551764362706}
   - component: {fileID: 24442551764362705}
   - component: {fileID: 24442551764362704}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: attack2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 24442552711047994}
   - component: {fileID: 24442552711047993}
   - component: {fileID: 24442552711047992}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: attack1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 24442553429931260}
   - component: {fileID: 24442553429931261}
   - component: {fileID: 24442553429931255}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Boss1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8983a440d15ceb3499d6af756df014b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 3
+  maxHealth: 20
   currentHealth: 0
   DeathDelayTime: 1.5
   deathDelay: 1.5
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 2271859844807339785}
   - component: {fileID: 1455736390295395379}
   - component: {fileID: 1957802668011857964}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthBarCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -443,7 +443,7 @@ GameObject:
   - component: {fileID: 8125019564426289602}
   - component: {fileID: 1436871795630904962}
   - component: {fileID: 8689000975287997176}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}

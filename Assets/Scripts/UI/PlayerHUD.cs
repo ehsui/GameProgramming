@@ -18,8 +18,14 @@ public class PlayerHUD : MonoBehaviour
     public Sprite emptyPotionSprite;
     public Sprite filledPotionSprite;
 
+    // [추가됨] 보조 무기 UI 참조
+    [Header("Weapon UI References")]
+    public Image subWeaponImage;        // 현재 보조 무기를 보여줄 UI 이미지
+    public Sprite[] subWeaponSprites;   // 보조 무기 스프라이트 배열 (0, 1, 2 순서)
+
     // === 플레이어 스탯 참조 ===
     private PlayerStats playerStats;
+    private PlayerInputReader inputReader;
 
     void Start()
     {
@@ -51,6 +57,22 @@ public class PlayerHUD : MonoBehaviour
                 UpdateLevelText(playerStats.level);
                 UpdateKarmaText(playerStats.karma, playerStats.level * 100);
             }
+
+            // [추가됨] 3. PlayerInputReader 연결 및 구독
+            inputReader = playerObject.GetComponent<PlayerInputReader>();
+            if (inputReader != null)
+            {
+                // 보조 무기 교체 이벤트 구독
+                inputReader.OnSubWeaponSwitchEvent += UpdateSubWeaponUI;
+                
+                // 시작 시 기본 무기(0번) 아이콘으로 초기화 (선택 사항)
+                UpdateSubWeaponUI(0); 
+            }
+            else
+            {
+                Debug.LogError("HUDManager: PlayerInputReader를 찾을 수 없습니다.");
+            }
+
         }
         else
         {
@@ -68,6 +90,12 @@ public class PlayerHUD : MonoBehaviour
             playerStats.OnPotionCountChanged -= UpdatePotionIcons;
             playerStats.OnLevelChanged -= UpdateLevelText;
             playerStats.OnKarmaChanged -= UpdateKarmaText;
+        }
+
+        // [추가됨] 이벤트 구독 해제
+        if (inputReader != null)
+        {
+            inputReader.OnSubWeaponSwitchEvent -= UpdateSubWeaponUI;
         }
     }
 
@@ -109,6 +137,26 @@ public class PlayerHUD : MonoBehaviour
         if (karmaText != null)
         {
             karmaText.text = $"{current} / {max}"; // 출력 예시: 50 / 100
+        }
+    }
+
+    // [추가됨] 보조 무기 아이콘 교체 함수
+    // index: 0, 1, 2 (InputReader에서 4,5,6키를 누르면 각각 0,1,2가 넘어옴)
+    public void UpdateSubWeaponUI(int index)
+    {
+        if (subWeaponImage == null) return;
+
+        // 인덱스가 배열 범위 내에 있는지 확인하여 오류 방지
+        if (index >= 0 && index < subWeaponSprites.Length)
+        {
+            if (subWeaponSprites[index] != null)
+            {
+                subWeaponImage.sprite = subWeaponSprites[index];
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"SubWeapon Index {index}가 범위를 벗어났습니다.");
         }
     }
 }

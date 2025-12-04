@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 744904334851333221}
   - component: {fileID: 1381284618606419176}
   - component: {fileID: 7504143092912356983}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthBarCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2239556451357094472}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FirePosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 2239556451824824651}
   - component: {fileID: 2239556451824824640}
   - component: {fileID: 7965638967758079430}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MeleeEnemy2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8983a440d15ceb3499d6af756df014b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 15
+  maxHealth: 5
   currentHealth: 15
   DeathDelayTime: 1.5
   deathDelay: 1.5
@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 5523957478685678507}
   - component: {fileID: 6281630488783511842}
   - component: {fileID: 7082463027179489336}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
