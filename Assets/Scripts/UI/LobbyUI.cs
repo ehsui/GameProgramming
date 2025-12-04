@@ -8,11 +8,6 @@ public class LobbyUI : MonoBehaviour
         SceneManager.LoadScene("Story");
     }
 
-    public void OnOptionsButton()
-    {
-        // �샃�뀡 �뙣�꼸 �솢�꽦�솕
-    }
-
     public void OnQuitButton()
     {
         Application.Quit();

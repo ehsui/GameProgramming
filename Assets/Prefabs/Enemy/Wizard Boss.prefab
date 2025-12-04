@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 2280325286290516900}
   - component: {fileID: 2571706882899178485}
   - component: {fileID: 3330624508224776483}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wizard Boss
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -173,9 +173,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   currentHealth: 0
-  DeathDelayTime: 1.5
-  deathDelay: 1.5
-  karmaReward: 10
+  DeathDelayTime: 0
+  deathDelay: 0
+  karmaReward: 100
   hitStunTime: 0.5
 --- !u!60 &2571706882899178485
 PolygonCollider2D:
@@ -288,7 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7964740826168562294}
   - component: {fileID: 7659578987497440094}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ExplosionEffectZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

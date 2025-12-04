@@ -16,8 +16,8 @@ MonoBehaviour:
   weaponId: 3
   icon: {fileID: 0}
   weaponSprite: {fileID: 0}
-  damage: 0
-  attackRate: 0
+  damage: 2
+  attackRate: 0.5
   attackRange: 2
   spawnOffset: 1
   animatorController: {fileID: 9100000, guid: cffc58ecacb34394ab9201b88fbafcdc, type: 2}

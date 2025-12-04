@@ -18,10 +18,10 @@ GameObject:
   - component: {fileID: 4951196348904910034}
   - component: {fileID: 4951196348904910029}
   - component: {fileID: -8732303806838520498}
-  - component: {fileID: 8022517714125890053}
+  - component: {fileID: 1946371227}
   m_Layer: 0
   m_Name: PEPE
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -177,8 +177,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 825ee2040d089e640ac0d3c989096dc8, type: 2}
   - {fileID: 11400000, guid: aaec08bbd3bde99499481c0f5d492461, type: 2}
   - {fileID: 11400000, guid: c8134cbfdbde6dd409a1f144163f52b4, type: 2}
-  skillCaster: {fileID: 0}
-  potionEffectPrefab: {fileID: 0}
+  skillCaster: {fileID: 1946371227}
+  potionEffectPrefab: {fileID: 781808138135571225, guid: 3ae8d618ee3bacc4a8549e0bb9891200, type: 3}
 --- !u!61 &4951196348904910035
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -251,99 +251,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelData: {fileID: 11400000, guid: de7d7ed67b36e3d48bbad73fa887bd9f, type: 2}
   playerStats: {fileID: 4951196348904910029}
---- !u!82 &8022517714125890053
-AudioSource:
+--- !u!114 &1946371227
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4951196348904910042}
   m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652df0c3e793eae42a286eedd6125f93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combinations:
+  - {fileID: 11400000, guid: de86172577e0c3349bc22b6c705c8f54, type: 2}
+  - {fileID: 11400000, guid: 3fa5ee5163206a6488ed60ffd0779c0e, type: 2}
+  - {fileID: 11400000, guid: eb8d820b44c3d1146a783185abaa1346, type: 2}
+  - {fileID: 11400000, guid: 5965ed9ca1f1c0a428e083198a5715ee, type: 2}
+  - {fileID: 11400000, guid: 7df70b09a06d21d4ab8afc5c00e1d290, type: 2}
+  - {fileID: 11400000, guid: c33a7807a1a3cb24abc26e60a74cde5d, type: 2}
+  - {fileID: 11400000, guid: c15921caf484a234daab3cedd0c387e9, type: 2}
+  - {fileID: 11400000, guid: 6e659873fb035ee4798ca629a6156d38, type: 2}
+  - {fileID: 11400000, guid: 8fda6a3914113634d8b973035a648dde, type: 2}
