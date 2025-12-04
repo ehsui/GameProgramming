@@ -313,7 +313,7 @@ MonoBehaviour:
   currentHealth: 0
   DeathDelayTime: 1.5
   deathDelay: 1.5
-  karmaReward: 10
+  karmaReward: 50
   hitStunTime: 0.5
 --- !u!1 &2314411350064503911
 GameObject:
