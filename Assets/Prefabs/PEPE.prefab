@@ -166,7 +166,7 @@ MonoBehaviour:
   playerAttack: {fileID: 4951196348904910034}
   stats: {fileID: 4951196348904910029}
   moveSpeed: 10
-  jumpPower: 15
+  jumpPower: 20
   maxJumpCount: 2
   currentJumpCount: 0
   mainWeapons:

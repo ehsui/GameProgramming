@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class SkillTreeManager : MonoBehaviour
 {
-    public static SkillTreeManager Instance;    // 싱글톤 인스턴스
+    public static SkillTreeManager Instance;    // �떛湲��넠 �씤�뒪�꽩�뒪
 
     [Header("Data")]
     public SkillTreeSaveData saveData;
     public PlayerLevelSaveData levelData;
 
     [Header("Line")]
-    public GameObject linePrefab;   // 노드 연결할 라인 프리팹 변수
+    public GameObject linePrefab;   // �끂�뱶 �뿰寃고븷 �씪�씤 �봽由ы뙶 蹂��닔
     public Color lockedLineColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     public Color unlockedLineColor = Color.white;
 
-    [Header("무기별 LineParent")]
+    [Header("臾닿린蹂� LineParent")]
     public Transform lineParentW1;
     public Transform lineParentW2;
     public Transform lineParentW3;
@@ -27,11 +27,11 @@ public class SkillTreeManager : MonoBehaviour
     [Header("Current Level")]
     public Text currentLevelText;
 
-    // 무기 강화 스탯
+    // 臾닿린 媛뺥솕 �뒪�꺈
     private class DamageBonus
     {
-        public float flatAddTotal = 0f;     // 고정값 합계
-        public float multiplierTotal = 1f;  // 배율 곱계
+        public float flatAddTotal = 0f;     // 怨좎젙媛� �빀怨�
+        public float multiplierTotal = 1f;  // 諛곗쑉 怨깃퀎
     }
 
     private Dictionary<NodeData, Node> nodeLookup = new Dictionary<NodeData, Node>();
@@ -39,11 +39,11 @@ public class SkillTreeManager : MonoBehaviour
 
     public void Awake()
     {
-        // 싱글톤
+        // �떛湲��넠
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);  // 씬 바껴도 파괴하지 않기
+            DontDestroyOnLoad(gameObject);  // �뵮 諛붽뺨�룄 �뙆愿댄븯吏� �븡湲�
         }
         else
         {
@@ -51,120 +51,120 @@ public class SkillTreeManager : MonoBehaviour
             return;
         }
 
-        // [테스트용] 게임 시작할 때마다 구매 목록 싹 비우기
-        // 테스트 끝나면 이 줄은 꼭 지우거나 주석 처리!!!!!!!!!!
+        // [�뀒�뒪�듃�슜] 寃뚯엫 �떆�옉�븷 �븣留덈떎 援щℓ 紐⑸줉 �떦 鍮꾩슦湲�
+        // �뀒�뒪�듃 �걹�굹硫� �씠 以꾩�� 瑗� 吏��슦嫄곕굹 二쇱꽍 泥섎━!!!!!!!!!!
         if (saveData != null)
         {
             saveData.purchasedNodes.Clear();
-            Debug.Log("테스트를 위해 구매 목록을 초기화했습니다.");
+            Debug.Log("�뀒�뒪�듃瑜� �쐞�빐 援щℓ 紐⑸줉�쓣 珥덇린�솕�뻽�뒿�땲�떎.");
         }
     }
 
-    // 저장된 데이터 불러와서 화면에 다시 그리기
+    // ����옣�맂 �뜲�씠�꽣 遺덈윭����꽌 �솕硫댁뿉 �떎�떆 洹몃━湲�
     public void Start()
     {
-        // 라인 생성 전에 모든 탭 뷰를 활성화해서 UI 계산이 제대로 되게 함
+        // �씪�씤 �깮�꽦 �쟾�뿉 紐⑤뱺 �꺆 酉곕�� �솢�꽦�솕�빐�꽌 UI 怨꾩궛�씠 �젣���濡� �릺寃� �븿
         if (tabController != null)
         {
             tabController.ActivateAllViewsTemporarily();
         }
         else
         {
-            Debug.LogError("Tab Controller가 연결되지 않았습니다.");
+            Debug.LogError("Tab Controller媛� �뿰寃곕릺吏� �븡�븯�뒿�땲�떎.");
         }
 
-        // 라인 생성
+        // �씪�씤 �깮�꽦
         GenerateAllLines();
 
-        // 라인 생성이 끝났으니 탭 상태를 초기화 (1번만 켜고 나머지 끔)
+        // �씪�씤 �깮�꽦�씠 �걹�궗�쑝�땲 �꺆 �긽�깭瑜� 珥덇린�솕 (1踰덈쭔 耳쒓퀬 �굹癒몄�� �걫)
         if (tabController != null)
         {
             tabController.InitializeTabs();
         }
 
-        // 2. 저장된 노드 데이터 불러와서 구매한 노드 색 변경
+        // 2. ����옣�맂 �끂�뱶 �뜲�씠�꽣 遺덈윭����꽌 援щℓ�븳 �끂�뱶 �깋 蹂�寃�
         RefreshUI();
 
         currentLevelText.text = $"Current Level : {levelData.level}";
     }
 
-    // 구매 가능한 노드인지 레벨 체크
+    // 援щℓ 媛��뒫�븳 �끂�뱶�씤吏� �젅踰� 泥댄겕
     public bool IsLevelAllowed(NodeData data)
     {
-        // 1레벨마다 노드 2개씩 구매 가능
+        // 1�젅踰⑤쭏�떎 �끂�뱶 2媛쒖뵫 援щℓ 媛��뒫
         int maxOrder = levelData.level * 1;
         return data.orderInBranch <= maxOrder;
     }
 
-    // 구매 가능한 노드인지 확인(마우스 클릭했을 때)
+    // 援щℓ 媛��뒫�븳 �끂�뱶�씤吏� �솗�씤(留덉슦�뒪 �겢由��뻽�쓣 �븣)
     public bool TryPurchase(NodeData data)
     {
-        // 0. 선행 노드가 구매 안됐음
+        // 0. �꽑�뻾 �끂�뱶媛� 援щℓ �븞�릱�쓬
         if (data.preNode != null && !saveData.purchasedNodes.Contains(data.preNode))
         {
-            Debug.Log($"현재 레벨: {levelData.level}\n>> 노드 구매 실패: 선행 노드를 먼저 구매해야 합니다.");
+            Debug.Log($"�쁽�옱 �젅踰�: {levelData.level}\n>> �끂�뱶 援щℓ �떎�뙣: �꽑�뻾 �끂�뱶瑜� 癒쇱�� 援щℓ�빐�빞 �빀�땲�떎.");
             return false;
         }
-        // 1. 레벨 제한
+        // 1. �젅踰� �젣�븳
         if (!IsLevelAllowed(data))
         {
-            Debug.Log($"현재 레벨: {levelData.level}\n>> 노드 구매 실패: 레벨이 부족합니다.");
+            Debug.Log($"�쁽�옱 �젅踰�: {levelData.level}\n>> �끂�뱶 援щℓ �떎�뙣: �젅踰⑥씠 遺�議깊빀�땲�떎.");
             return false;
         }
-        // 2. 이미 구매한 노드일 때
+        // 2. �씠誘� 援щℓ�븳 �끂�뱶�씪 �븣
         if (saveData.purchasedNodes.Contains(data))
         {
-            Debug.Log($"현재 레벨: {levelData.level}\n>> 이미 구매한 노드입니다.");
+            Debug.Log($"�쁽�옱 �젅踰�: {levelData.level}\n>> �씠誘� 援щℓ�븳 �끂�뱶�엯�땲�떎.");
             return false;
         }
         
 
-        // 노드 구매 처리
+        // �끂�뱶 援щℓ 泥섎━
         saveData.purchasedNodes.Add(data);
-        Debug.Log($">> {data.name} 구매 성공!");
+        Debug.Log($">> {data.name} 援щℓ �꽦怨�!");
 
-        // 색상 변경
+        // �깋�긽 蹂�寃�
         RefreshUI();
 
-        // 노드 클릭하면 스탯 증가
+        // �끂�뱶 �겢由��븯硫� �뒪�꺈 利앷��
         ApplyNodeEffect(data);
 
         return true;
     }
 
-    // 구매한 노드인지 확인
+    // 援щℓ�븳 �끂�뱶�씤吏� �솗�씤
     public bool IsPurchased(NodeData data)
     {
         return saveData.purchasedNodes.Contains(data);
     }
 
-    // 노드 연결하는 라인 생성
+    // �끂�뱶 �뿰寃고븯�뒗 �씪�씤 �깮�꽦
     void GenerateAllLines()
     {
-        // nodeLookup에 등록된 모든 노드를 하나씩 꺼내기
+        // nodeLookup�뿉 �벑濡앸맂 紐⑤뱺 �끂�뱶瑜� �븯�굹�뵫 爰쇰궡湲�
         foreach (KeyValuePair<NodeData, Node> entry in nodeLookup)
         {
             NodeData data = entry.Key;
             Node currentNode = entry.Value;
 
-            // 선행 노드가 없으면(루트 노드면) 선 생성X
+            // �꽑�뻾 �끂�뱶媛� �뾾�쑝硫�(猷⑦듃 �끂�뱶硫�) �꽑 �깮�꽦X
             if (data.preNode == null) continue;
 
-            // 선 생성 함수 호출
+            // �꽑 �깮�꽦 �븿�닔 �샇異�
             CreateLineObject(currentNode, data);
         }
     }
 
-    // UI 새로고침 (색깔 업데이트)
+    // UI �깉濡쒓퀬移� (�깋源� �뾽�뜲�씠�듃)
     public void RefreshUI()
     {
-        // 모든 노드를 하나씩 검사
+        // 紐⑤뱺 �끂�뱶瑜� �븯�굹�뵫 寃��궗
         foreach (KeyValuePair<NodeData, Node> entry in nodeLookup)
         {
             NodeData data = entry.Key;
             Node node = entry.Value;
 
-            // 1. 노드 색상 처리 (구매됐으면 밝게, 아니면 어둡게)
+            // 1. �끂�뱶 �깋�긽 泥섎━ (援щℓ�릱�쑝硫� 諛앷쾶, �븘�땲硫� �뼱�몼寃�)
             if (IsPurchased(data))
             {
                 node.isPurchased = true;
@@ -176,13 +176,13 @@ public class SkillTreeManager : MonoBehaviour
                 node.nodeImage.color = node.normalColor;
             }
 
-            // 2. 라인 색상 처리
-            // connectedLine : 부모 노드 -> 현재 노드 연결하는 라인
+            // 2. �씪�씤 �깋�긽 泥섎━
+            // connectedLine : 遺�紐� �끂�뱶 -> �쁽�옱 �끂�뱶 �뿰寃고븯�뒗 �씪�씤
             if (node.connectedLine != null && data.preNode != null)
             {
                 if (IsPurchased(data.preNode))
                 {
-                    // 부모 노드가 구매되면 connectedLine 밝게 변경
+                    // 遺�紐� �끂�뱶媛� 援щℓ�릺硫� connectedLine 諛앷쾶 蹂�寃�
                     node.connectedLine.color = unlockedLineColor;
                 }
                 else
@@ -193,16 +193,16 @@ public class SkillTreeManager : MonoBehaviour
         }
     }
 
-    // 라인 오브젝트 실제로 화면에 생성
+    // �씪�씤 �삤釉뚯젥�듃 �떎�젣濡� �솕硫댁뿉 �깮�꽦
     void CreateLineObject(Node childNode, NodeData data)
     {
         Node parentNode = FindNodeInstance(data.preNode);
         if (parentNode == null) return;
 
-        // 부모 LineParent 찾기
+        // 遺�紐� LineParent 李얘린
         Transform targetLineParent = null;
 
-        switch (data.branchType) // NodeData의 BranchType
+        switch (data.branchType) // NodeData�쓽 BranchType
         {
             case BranchType.Weapon1:
             case BranchType.Weapon11:
@@ -223,16 +223,16 @@ public class SkillTreeManager : MonoBehaviour
                 targetLineParent = lineParentW3;
                 break;
             default:
-                Debug.LogError($"[SkillTreeManager] 알 수 없는 BranchType입니다: {data.branchType}, 노드 이름: {data.name}");
-                return; // 부모를 못 찾으면 라인 생성 중단
+                Debug.LogError($"[SkillTreeManager] �븣 �닔 �뾾�뒗 BranchType�엯�땲�떎: {data.branchType}, �끂�뱶 �씠由�: {data.name}");
+                return; // 遺�紐⑤�� 紐� 李얠쑝硫� �씪�씤 �깮�꽦 以묐떒
         }
 
-        // 라인 오브젝트 생성
+        // �씪�씤 �삤釉뚯젥�듃 �깮�꽦
         GameObject lineObj = Instantiate(linePrefab, targetLineParent);
         RectTransform lineRect = lineObj.GetComponent<RectTransform>();
         Image lineImage = lineObj.GetComponent<Image>();
 
-        // 위치, 회전
+        // �쐞移�, �쉶�쟾
         Vector2 startPosLocal = targetLineParent.InverseTransformPoint(parentNode.GetComponent<RectTransform>().position);
         Vector2 endPosLocal = targetLineParent.InverseTransformPoint(childNode.GetComponent<RectTransform>().position);
 
@@ -244,29 +244,29 @@ public class SkillTreeManager : MonoBehaviour
         Vector2 dir = endPosLocal - startPosLocal;
         float distance = dir.magnitude;
 
-        // 길이와 회전
+        // 湲몄씠��� �쉶�쟾
         lineRect.sizeDelta = new Vector2(lineRect.sizeDelta.x, distance);
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
         lineRect.localRotation = Quaternion.Euler(0, 0, angle);
 
-        lineRect.SetAsLastSibling(); // 맨 앞에 그리기
-        if (lineImage != null) lineImage.raycastTarget = false; // 레이캐스트 끄기
+        lineRect.SetAsLastSibling(); // 留� �븵�뿉 洹몃━湲�
+        if (lineImage != null) lineImage.raycastTarget = false; // �젅�씠罹먯뒪�듃 �걚湲�
 
-        // 처음엔 어두운 색
+        // 泥섏쓬�뿏 �뼱�몢�슫 �깋
         lineImage.color = lockedLineColor;
 
-        // 자식 노드에 생성된 라인 이미지 저장
+        // �옄�떇 �끂�뱶�뿉 �깮�꽦�맂 �씪�씤 �씠誘몄�� ����옣
         childNode.connectedLine = lineImage;
     }
 
-    // 노드 데이터 등록
+    // �끂�뱶 �뜲�씠�꽣 �벑濡�
     public void RegisterNode(NodeData data, Node node)
     {
         if (!nodeLookup.ContainsKey(data))
             nodeLookup.Add(data, node);
     }
 
-    // NodeData에 해당하는 노드 오브젝트 반환
+    // NodeData�뿉 �빐�떦�븯�뒗 �끂�뱶 �삤釉뚯젥�듃 諛섑솚
     public Node FindNodeInstance(NodeData data)
     {
         if (nodeLookup.ContainsKey(data))
@@ -274,13 +274,13 @@ public class SkillTreeManager : MonoBehaviour
         return null;
     }
 
-    // 노드 구매하면 스탯 증가
+    // �끂�뱶 援щℓ�븯硫� �뒪�꺈 利앷��
     void ApplyNodeEffect(NodeData data)
     {
-        // 효과가 없거나 대상 무기가 없으면 패스
+        // �슚怨쇨�� �뾾嫄곕굹 ����긽 臾닿린媛� �뾾�쑝硫� �뙣�뒪
         if (data.bonusType == AttackBonusType.None || data.bonusValue == 0f || data.targetWeapons == null) return;
 
-        // 적용 대상 무기 이름들 수집(금강령 + 석장)
+        // �쟻�슜 ����긽 臾닿린 �씠由꾨뱾 �닔吏�(湲덇컯�졊 + �꽍�옣)
         string weaponNamesStr = "";
         for (int i = 0; i < data.targetWeapons.Length; i++)
         {
@@ -289,21 +289,21 @@ public class SkillTreeManager : MonoBehaviour
             if (i < data.targetWeapons.Length - 1) weaponNamesStr += " + ";
         }
 
-        // 각 무기별로 보너스 적용
+        // 媛� 臾닿린蹂꾨줈 蹂대꼫�뒪 �쟻�슜
         foreach (WeaponData weapon in data.targetWeapons)
         {
             if (weapon == null) continue;
 
-            // 1. 이 무기의 보너스 기록이 없으면 새로 만듦
+            // 1. �씠 臾닿린�쓽 蹂대꼫�뒪 湲곕줉�씠 �뾾�쑝硫� �깉濡� 留뚮벀
             if (!weaponBonusMap.ContainsKey(weapon))
             {
                 weaponBonusMap.Add(weapon, new DamageBonus());
             }
 
-            // 2. 보너스 타입에 따라 값을 누적 기록
+            // 2. 蹂대꼫�뒪 ����엯�뿉 �뵲�씪 媛믪쓣 �늻�쟻 湲곕줉
             DamageBonus currentBonus = weaponBonusMap[weapon];
 
-            // 최종 공격력 계산을 위해 기본 공격력 가져오기
+            // 理쒖쥌 怨듦꺽�젰 怨꾩궛�쓣 �쐞�빐 湲곕낯 怨듦꺽�젰 媛��졇�삤湲�
             float baseDamage = weapon.damage;
             float currentFinalDamage = 0f;
 
@@ -312,41 +312,41 @@ public class SkillTreeManager : MonoBehaviour
                 case AttackBonusType.FlatAdd:
                     currentBonus.flatAddTotal += data.bonusValue;
 
-                    // 현재 시점의 최종 공격력 계산: (기본 + 고정합) * 배율곱
+                    // �쁽�옱 �떆�젏�쓽 理쒖쥌 怨듦꺽�젰 怨꾩궛: (湲곕낯 + 怨좎젙�빀) * 諛곗쑉怨�
                     currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
 
-                    // 현재 최종 공격력 출력
-                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 +{data.bonusValue} (현재 '{weapon.weaponName}' 공격력: {currentFinalDamage:F2})");
+                    // �쁽�옱 理쒖쥌 怨듦꺽�젰 異쒕젰
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 怨듦꺽�젰 +{data.bonusValue} (�쁽�옱 '{weapon.weaponName}' 怨듦꺽�젰: {currentFinalDamage:F2})");
                     break;
 
                 case AttackBonusType.Multiplier:
                     currentBonus.multiplierTotal *= data.bonusValue;
 
-                    // 현재 시점의 최종 공격력 계산
+                    // �쁽�옱 �떆�젏�쓽 理쒖쥌 怨듦꺽�젰 怨꾩궛
                     currentFinalDamage = (baseDamage + currentBonus.flatAddTotal) * currentBonus.multiplierTotal;
 
-                    // 현재 최종 공격력 출력 (소수점 2자리까지 표시)
-                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 공격력 x{data.bonusValue} (현재 '{weapon.weaponName}' 공격력: {currentFinalDamage:F2})");
+                    // �쁽�옱 理쒖쥌 怨듦꺽�젰 異쒕젰 (�냼�닔�젏 2�옄由ш퉴吏� �몴�떆)
+                    Debug.Log($" [{weaponNamesStr}] '{weapon.weaponName}' 怨듦꺽�젰 x{data.bonusValue} (�쁽�옱 '{weapon.weaponName}' 怨듦꺽�젰: {currentFinalDamage:F2})");
                     break;
             }
         }
     }
 
-    // 외부에서 최종 데미지를 요청할 때 계산하는 함수
+    // �쇅遺��뿉�꽌 理쒖쥌 �뜲誘몄��瑜� �슂泥��븷 �븣 怨꾩궛�븯�뒗 �븿�닔
     public float GetFinalWeaponDamage(WeaponData weapon)
     {
-        float baseDamage = weapon.damage; // 원본 공격력
+        float baseDamage = weapon.damage; // �썝蹂� 怨듦꺽�젰
 
-        // 보너스 기록이 없으면 원본 그대로 반환
+        // 蹂대꼫�뒪 湲곕줉�씠 �뾾�쑝硫� �썝蹂� 洹몃��濡� 諛섑솚
         if (!weaponBonusMap.ContainsKey(weapon))
         {
             return baseDamage;
         }
 
-        // 기록이 있으면 계산 시작
+        // 湲곕줉�씠 �엳�쑝硫� 怨꾩궛 �떆�옉
         DamageBonus bonus = weaponBonusMap[weapon];
 
-        // 최종 데미지 = (원본 + 고정값 총합) * 배율 총곱
+        // 理쒖쥌 �뜲誘몄�� = (�썝蹂� + 怨좎젙媛� 珥앺빀) * 諛곗쑉 珥앷낢
         float finalDamage = (baseDamage + bonus.flatAddTotal) * bonus.multiplierTotal;
 
         return finalDamage;
